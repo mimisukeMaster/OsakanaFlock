@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 26877787}
   - component: {fileID: 26877786}
+  - component: {fileID: 26877788}
   m_Layer: 0
   m_Name: Simulation
   m_TagString: Untagged
@@ -169,6 +170,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &26877788
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 26877785}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 25, y: 25, z: 25}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1439525624
 GameObject:
   m_ObjectHideFlags: 0
@@ -389,8 +403,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1787523302}
-  m_LocalRotation: {x: 0.23753351, y: -0.21891506, z: 0.055038437, w: 0.9447883}
-  m_LocalPosition: {x: 3.6119437, y: 4.4081874, z: -7.3757153}
+  m_LocalRotation: {x: 0.2022334, y: -0.18211545, z: 0.03830376, w: 0.96149284}
+  m_LocalPosition: {x: 12.372231, y: 14.890587, z: -31.488533}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

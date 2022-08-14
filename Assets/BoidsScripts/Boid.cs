@@ -13,13 +13,14 @@ namespace Boid.OOP
         Vector3 accel = Vector3.zero;
         List<Boid> neighbors = new List<Boid>();
 
-        //目標の点への移動フラグ
-        bool movingToTaget;
+        bool movingToTaget;  //目標の点への移動フラグ
+        Vector3 colliderSize;
 
         void Start()
         {
             pos = transform.position;
             velocity = transform.forward * param.initSpeed;
+            colliderSize = GetComponentInParent<BoxCollider>().size;
         }
 
         void Update()
@@ -30,7 +31,7 @@ namespace Boid.OOP
             UpdateAlignment();
             UpdateCohesion();
             UpdateMove();
-            if (Input.GetMouseButtonDown(0) || movingToTaget) UpdateMoveToPoint();
+            if (Input.GetMouseButtonDown(0) || movingToTaget) UpdateMoveToPoint(Vector3.up * 3);
 
         }
 
@@ -77,14 +78,20 @@ namespace Boid.OOP
         {
             if (!simulation) return;
 
-            var scale = param.wallScale * 0.5f;
+            var scaleXP = colliderSize.x * 0.5f + transform.parent.position.x;
+            var scaleXM = colliderSize.x * 0.5f - transform.parent.position.x;
+            var scaleYP = colliderSize.y * 0.5f + transform.parent.position.y;
+            var scaleYM = colliderSize.y * 0.5f - transform.parent.position.y;
+            var scaleZP = colliderSize.z * 0.5f + transform.parent.position.z;
+            var scaleZM = colliderSize.z * 0.5f - transform.parent.position.z;
+
             accel +=
-                CalcAccelAgainstWall(-scale - pos.x, Vector3.right) +
-                CalcAccelAgainstWall(-scale - pos.y, Vector3.up) +
-                CalcAccelAgainstWall(-scale - pos.z, Vector3.forward) +
-                CalcAccelAgainstWall(+scale - pos.x, Vector3.left) +
-                CalcAccelAgainstWall(+scale - pos.y, Vector3.down) +
-                CalcAccelAgainstWall(+scale - pos.z, Vector3.back);
+                CalcAccelAgainstWall(-scaleXM - pos.x, Vector3.right) +
+                CalcAccelAgainstWall(-scaleYM - pos.y, Vector3.up) +
+                CalcAccelAgainstWall(-scaleZM - pos.z, Vector3.forward) +
+                CalcAccelAgainstWall(+scaleXP - pos.x, Vector3.left) +
+                CalcAccelAgainstWall(+scaleYP - pos.y, Vector3.down) +
+                CalcAccelAgainstWall(+scaleZP - pos.z, Vector3.back);
         }
 
         Vector3 CalcAccelAgainstWall(float distance, Vector3 dir)
@@ -170,18 +177,14 @@ namespace Boid.OOP
             accel = Vector3.zero;
         }
 
-        void UpdateMoveToPoint()
+        void UpdateMoveToPoint(Vector3 targetPos)
         {
-            var targetPos = new Vector3(0, 3, 0);
-
-            Debug.DrawRay(targetPos, targetPos + Vector3.forward, Color.magenta, 900);
-            Vector3 dirVector = targetPos - transform.position;
-            accel += dirVector * param.targetSpeed;
+            //Debug.DrawRay(targetPos, targetPos + Vector3.forward, Color.magenta, 900);
+            accel += (targetPos - transform.position) * param.targetSpeed;
 
             movingToTaget = true;
             if (Vector3.Distance(targetPos, transform.position) <= param.proximityThr)
             {
-                Debug.Log("もう着いたわ");
                 movingToTaget = false;
             }
         }

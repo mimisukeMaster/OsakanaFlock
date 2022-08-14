@@ -27,14 +27,14 @@ namespace Boid
         [Tooltip("整列のウエイト、大きいほどみな同じ方向に")]
         public float alignmentWeight = 2f;
         [Tooltip("結合のウエイト、大きいほど集まる")]
-        public float cohesionWeight = 3f;
-
 
         [Header("My param")]
-
-        [Tooltip("目標の点に向かうスピード")]
+        public float cohesionWeight = 3f;
+        [Tooltip("目標の点に向かうスピード\n遅いほど3ルールが勝り" +
+        "目標点に中々到達できないので周りを徘徊する")]
         public float targetSpeed;
-        [Tooltip("目標の点への移動をやめる距離のしきい値")]
+        [Tooltip("目標の点への移動をやめる距離のしきい値\n遅いほど3ルールが勝り" +
+        "目標点に中々到達できないので周りを徘徊する\ntargetSpeedより顕著に現れる")]
         public float proximityThr;
 
     }
