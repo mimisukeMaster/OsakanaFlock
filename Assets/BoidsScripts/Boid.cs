@@ -13,17 +13,24 @@ namespace Boid.OOP
         Vector3 accel = Vector3.zero;
         List<Boid> neighbors = new List<Boid>();
 
-        public bool movingToTaget;  //目標の点への移動フラグ
-        Vector3 BoundingBox;
+        bool movingToTaget;   //目標の点への移動フラグ
+        Vector3 BoundingBox;  // 移動範囲のバウンディングボックス
 
+        Collider myDetectRange; // 障害物検知範囲
+
+        float HP;
+        float maxHP = 10.0f;
+        float HPRatio = 0.1f;
         void Start()
         {
-            param = ScriptableObject.CreateInstance<Param>();
 
             pos = transform.position;
             velocity = transform.forward * param.initSpeed;
 
             BoundingBox = simulation.ColliderSize;
+            myDetectRange = GetComponent<Collider>();
+
+            HP = maxHP;
         }
 
         void Update()
@@ -34,8 +41,14 @@ namespace Boid.OOP
             UpdateAlignment();
             UpdateCohesion();
             UpdateMove();
-            if (Input.GetMouseButtonDown(0) || movingToTaget) UpdateMoveToPoint(Vector3.up * 3);
-            UpdateParam();
+
+            if (movingToTaget) UpdateMoveToPoint(Vector3.up * 3);
+
+            if (Input.GetMouseButtonDown(0)) movingToTaget = true;
+
+            // HPを徐々に減らす
+            HP -= Time.deltaTime;
+
         }
 
         /// <summary>
@@ -181,6 +194,25 @@ namespace Boid.OOP
         }
 
         /// <summary>
+        /// 障害判定：<br></br>
+        /// Obstacle: 検知したら その物体に近ければ近いほど逃げる方向のベクトルを強めaccelに加算
+        /// </summary>
+        /// <param name="other">衝突相手</param>
+        void OnCollisionEnter(Collision other)
+        {
+            Debug.Log("CLI");
+            if (other.gameObject.tag == "Obstacle")
+            {
+                Debug.Log("sharlk");
+                accel +=
+                 (transform.position - other.transform.position) * (1 / param.avoidWeight);
+                /// TODO
+                /// ぶつかった対象のオブジェクトの中心座標と自身の座標との比較なので相手がでかいとほかの部分のメッシュを貫通する可能性
+                /// 本当は最短のメッシュとの距離を取得してそれを逃げるベクトルに使いたい
+            }
+        }
+
+        /// <summary>
         /// 指定した座標までBoidを滑らかに誘導する
         /// </summary>
         /// <param name="targetPos">指定した座標</param>
@@ -188,50 +220,15 @@ namespace Boid.OOP
         {
             accel += (targetPos - transform.position) * param.targetSpeed;
 
-            movingToTaget = true;
-
             if (Vector3.Distance(targetPos, transform.position) <= param.proximityThr)
             {
-                Debug.Log("before: " + param.maxSpeed);
-                // ついたので値を初期化して元気得る
-                param.Reset();
+                // hpアップ処理
+                // boidのインスタンス変数としてHP用意 maxminspeed系はparam持ってるからここでは変更しない
+                HP = maxHP;
 
-                Debug.Log(param.maxSpeed);
-                ///
-                /// <TODO>
-                /// ここでReset（）読んでも実行されない
-                /// インスタンス化しているから元のパラメータは制御できない
-                /// インスタンス化するのは今後範囲を決めてそのBoidたちに処理させるので全体ではなく個々に分ける必要がある
-                /// インスタンス化してそれをいじってるつもりなのに動かない
-                /// 
-                /// そもそも全部インスタンス化して処理すると減速とか離散とかの処理も一つ一つやらなくちゃいけないので負荷大
-                /// 
-                /// インスタンス化するしないどうするか
                 Debug.Log("REACHED!");
                 movingToTaget = false;
             }
-        }
-
-
-
-        void UpdateParam()
-        {
-            // // 時間とともに近隣の個体を認識する角を小さくして統一感をなくす
-
-            // // 10sたったらがーん
-            // if (timer - Time.realtimeSinceStartup >= 5 && param.neighborFov > 0)
-            // {
-            //     param.neighborFov -= Time.deltaTime * param.neighborFovRatio;
-            // }else{
-            //     param.neighborFov = 0;
-            // }
-            // Debug.Log("nighrfov:  " + param.neighborFov);
-
-            // // 時間とともに減速して元気なくなる
-            // param.maxSpeed -= Time.deltaTime * param.speedDampingRatio;
-            // param.minSpeed -= Time.deltaTime * param.speedDampingRatio;
-
-
         }
     }
 }

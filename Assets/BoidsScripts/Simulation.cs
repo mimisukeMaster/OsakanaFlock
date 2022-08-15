@@ -21,8 +21,10 @@ namespace Boid.OOP
         {
             get { return boids_.AsReadOnly(); }
         }
-
         public Vector3 ColliderSize;
+        Boid boid;
+        float timer;
+        int disarrangedStep = 1;
 
         void Awake()
         {
@@ -30,6 +32,8 @@ namespace Boid.OOP
 
             // パラメータをリセット
             param.Reset();
+
+            timer = Time.realtimeSinceStartup;
         }
 
         void AddBoid()
@@ -56,12 +60,40 @@ namespace Boid.OOP
         {
             while (boids_.Count < boidCount)
             {
-                Debug.Log("AddBoid");
                 AddBoid();
             }
             while (boids_.Count > boidCount)
             {
                 RemoveBoid();
+            }
+
+            // 時間経過によるBoidsの変化
+            UpdateParam();
+        }
+
+        void UpdateParam()
+        {
+
+            // 指定秒たつごとに乱れる
+            if (Time.realtimeSinceStartup - timer > param.disarrangedInverval)
+            {
+                if (disarrangedStep == 1)
+                {
+                    param.neighborFov = param.neighborFov_d1;
+                    Debug.Log("step１");
+                }
+                else if (disarrangedStep == 2)
+                {
+                    param.minSpeed = param.minSpeed_d2;
+                    param.maxSpeed = param.maxSpeed_d2;
+                    param.neighborFov = param.neighborFov_d2;
+                    Debug.Log("step2");
+                }
+                // タイマー更新
+                timer = Time.realtimeSinceStartup;
+
+                Debug.Log("ガーン");
+                disarrangedStep++;
             }
         }
     }

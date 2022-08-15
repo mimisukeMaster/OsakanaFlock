@@ -27,3 +27,10 @@ MonoBehaviour:
   proximityThr: 1.3
   speedDampingRatio: 0.035
   neighborFovRatio: 3
+  disarrangedInverval: 20
+  avoidWeight: 0.1
+  o: 0
+  neighborFov_d1: 5
+  minSpeed_d2: 1
+  maxSpeed_d2: 1.5
+  neighborFov_d2: 1
