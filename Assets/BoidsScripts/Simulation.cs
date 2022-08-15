@@ -22,6 +22,16 @@ namespace Boid.OOP
             get { return boids_.AsReadOnly(); }
         }
 
+        public Vector3 ColliderSize;
+
+        void Awake()
+        {
+            ColliderSize = GetComponent<BoxCollider>().size;
+
+            // パラメータをリセット
+            param.Reset();
+        }
+
         void AddBoid()
         {
             var go = Instantiate(boidPrefab, Random.insideUnitSphere, Random.rotation);
@@ -46,6 +56,7 @@ namespace Boid.OOP
         {
             while (boids_.Count < boidCount)
             {
+                Debug.Log("AddBoid");
                 AddBoid();
             }
             while (boids_.Count > boidCount)
@@ -54,5 +65,4 @@ namespace Boid.OOP
             }
         }
     }
-
 }

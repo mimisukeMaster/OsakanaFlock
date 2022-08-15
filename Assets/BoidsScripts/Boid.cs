@@ -13,14 +13,17 @@ namespace Boid.OOP
         Vector3 accel = Vector3.zero;
         List<Boid> neighbors = new List<Boid>();
 
-        bool movingToTaget;  //目標の点への移動フラグ
-        Vector3 colliderSize;
+        public bool movingToTaget;  //目標の点への移動フラグ
+        Vector3 BoundingBox;
 
         void Start()
         {
+            param = ScriptableObject.CreateInstance<Param>();
+
             pos = transform.position;
             velocity = transform.forward * param.initSpeed;
-            colliderSize = GetComponentInParent<BoxCollider>().size;
+
+            BoundingBox = simulation.ColliderSize;
         }
 
         void Update()
@@ -32,7 +35,7 @@ namespace Boid.OOP
             UpdateCohesion();
             UpdateMove();
             if (Input.GetMouseButtonDown(0) || movingToTaget) UpdateMoveToPoint(Vector3.up * 3);
-
+            UpdateParam();
         }
 
         /// <summary>
@@ -78,12 +81,12 @@ namespace Boid.OOP
         {
             if (!simulation) return;
 
-            var scaleXP = colliderSize.x * 0.5f + transform.parent.position.x;
-            var scaleXM = colliderSize.x * 0.5f - transform.parent.position.x;
-            var scaleYP = colliderSize.y * 0.5f + transform.parent.position.y;
-            var scaleYM = colliderSize.y * 0.5f - transform.parent.position.y;
-            var scaleZP = colliderSize.z * 0.5f + transform.parent.position.z;
-            var scaleZM = colliderSize.z * 0.5f - transform.parent.position.z;
+            var scaleXP = BoundingBox.x * 0.5f + transform.parent.position.x;
+            var scaleXM = BoundingBox.x * 0.5f - transform.parent.position.x;
+            var scaleYP = BoundingBox.y * 0.5f + transform.parent.position.y;
+            var scaleYM = BoundingBox.y * 0.5f - transform.parent.position.y;
+            var scaleZP = BoundingBox.z * 0.5f + transform.parent.position.z;
+            var scaleZM = BoundingBox.z * 0.5f - transform.parent.position.z;
 
             accel +=
                 CalcAccelAgainstWall(-scaleXM - pos.x, Vector3.right) +
@@ -177,17 +180,58 @@ namespace Boid.OOP
             accel = Vector3.zero;
         }
 
+        /// <summary>
+        /// 指定した座標までBoidを滑らかに誘導する
+        /// </summary>
+        /// <param name="targetPos">指定した座標</param>
         void UpdateMoveToPoint(Vector3 targetPos)
         {
-            //Debug.DrawRay(targetPos, targetPos + Vector3.forward, Color.magenta, 900);
             accel += (targetPos - transform.position) * param.targetSpeed;
 
             movingToTaget = true;
+
             if (Vector3.Distance(targetPos, transform.position) <= param.proximityThr)
             {
+                Debug.Log("before: " + param.maxSpeed);
+                // ついたので値を初期化して元気得る
+                param.Reset();
+
+                Debug.Log(param.maxSpeed);
+                ///
+                /// <TODO>
+                /// ここでReset（）読んでも実行されない
+                /// インスタンス化しているから元のパラメータは制御できない
+                /// インスタンス化するのは今後範囲を決めてそのBoidたちに処理させるので全体ではなく個々に分ける必要がある
+                /// インスタンス化してそれをいじってるつもりなのに動かない
+                /// 
+                /// そもそも全部インスタンス化して処理すると減速とか離散とかの処理も一つ一つやらなくちゃいけないので負荷大
+                /// 
+                /// インスタンス化するしないどうするか
+                Debug.Log("REACHED!");
                 movingToTaget = false;
             }
         }
-    }
 
+
+
+        void UpdateParam()
+        {
+            // // 時間とともに近隣の個体を認識する角を小さくして統一感をなくす
+
+            // // 10sたったらがーん
+            // if (timer - Time.realtimeSinceStartup >= 5 && param.neighborFov > 0)
+            // {
+            //     param.neighborFov -= Time.deltaTime * param.neighborFovRatio;
+            // }else{
+            //     param.neighborFov = 0;
+            // }
+            // Debug.Log("nighrfov:  " + param.neighborFov);
+
+            // // 時間とともに減速して元気なくなる
+            // param.maxSpeed -= Time.deltaTime * param.speedDampingRatio;
+            // param.minSpeed -= Time.deltaTime * param.speedDampingRatio;
+
+
+        }
+    }
 }
