@@ -24,7 +24,7 @@ namespace Boid
         [Tooltip("壁から離れようとする残りの壁との距離")]
         public float wallDistance = 3f;
         [Tooltip("壁からよける力のウエイト")]
-        public float wallWeight = 10f;
+        public float wallWeight = 1f;
         [Tooltip("整列のウエイト、大きいほどみな同じ方向に")]
         public float alignmentWeight = 2f;
         [Tooltip("結合のウエイト、大きいほど集まる")]
@@ -77,7 +77,7 @@ namespace Boid
             separationWeight = 6f;
             wallScale = 30f;
             wallDistance = 3f;
-            wallWeight = 10f;
+            wallWeight = 1f;
             alignmentWeight = 2f;
             cohesionWeight = 3f;
             targetSpeed = 1f;

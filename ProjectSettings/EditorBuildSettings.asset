@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TestVisualizer.unity
     guid: 16e2f07633259412a9eae42088d3972d
+  - enabled: 1
+    path: Assets/Scenes/FlockingScene.unity
+    guid: 895cd8c469dc0ee41bb5fab66cae86f7
   m_configObjects: {}

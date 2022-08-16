@@ -20,7 +20,7 @@ MonoBehaviour:
   separationWeight: 6
   wallScale: 30
   wallDistance: 3
-  wallWeight: 10
+  wallWeight: 1
   alignmentWeight: 2
   cohesionWeight: 3
   targetSpeed: 1

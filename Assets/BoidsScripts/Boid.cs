@@ -203,14 +203,21 @@ namespace Boid.OOP
 
                 // Wallと違って六面から(反対側,一つの軸に二つよける対象がある)ではないので計算量はXYZ軸一回づつのみで済む
                 // Vector3.Distanceをとるとfloatが返されVector成分情報が失われてしまうので成分ごとにCalc
-                accel +=
-                    CalcAccelAgainstObstacle(pos.x - obs.transform.position.x, Vector3.right) +
-                    CalcAccelAgainstObstacle(pos.y - obs.transform.position.y, Vector3.up) +
-                    CalcAccelAgainstObstacle(pos.z - obs.transform.position.z, Vector3.forward);
+                Vector3 X =
+                    CalcAccelAgainstObstacle(pos.x - obs.transform.position.x, Vector3.left);
+                Vector3 Y =
+                    CalcAccelAgainstObstacle(pos.y - obs.transform.position.y, Vector3.down);
+                Vector3 Z =
+                    CalcAccelAgainstObstacle(pos.z - obs.transform.position.z, Vector3.back);
 
-                Debug.DrawLine(pos, pos + accel, Color.magenta);
+                Debug.DrawLine(pos, pos + X + Y + Z, Color.magenta);
+                // Debug.DrawLine(pos, pos + Y, Color.green);
+                // Debug.DrawLine(pos, pos + Z, Color.cyan);
 
-                // なぜか軸方向の計算結果のみが反映されてる 
+
+                accel += X + Y + Z;
+
+                // なぜか軸方向の計算結果のみが反映されてる よるほうこうにいく　ちかいほどつよい
                 // 一つの成分が逃げる開始の値になってもほかの成分は平気なとき、一つの軸方向にのみaccleがかかってしまう
             }
         }
