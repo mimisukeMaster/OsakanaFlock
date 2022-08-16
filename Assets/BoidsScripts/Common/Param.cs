@@ -24,11 +24,13 @@ namespace Boid
         [Tooltip("壁から離れようとする残りの壁との距離")]
         public float wallDistance = 3f;
         [Tooltip("壁からよける力のウエイト")]
-        public float wallWeight = 1f;
+        public float wallWeight = 10f;
         [Tooltip("整列のウエイト、大きいほどみな同じ方向に")]
         public float alignmentWeight = 2f;
         [Tooltip("結合のウエイト、大きいほど集まる")]
         public float cohesionWeight = 3f;
+
+
 
         [Header("My param")]
         [Tooltip("目標の点に向かうスピード\n遅いほど3ルールが勝り目標点に中々到達できないので周りを徘徊する")]
@@ -43,9 +45,13 @@ namespace Boid
         public float neighborFovRatio = 3.0f;
         [Tooltip("集団の動きが乱れるパラメータ設定に変わっていく間隔")]
         public float disarrangedInverval = 20.0f;
-        [Tooltip("障害物を避けるウエイト、小さいほど忌避")]
-        public float avoidWeight = 0.025f;
+        [Tooltip("障害物を避け始める残りの障害物との距離")]
+        public float avoidDistance = 9.0f;
+        [Tooltip("障害物を避けるウエイト、大きいほど忌避")]
+        public float avoidWeight = 1.0f;
 
+
+        #region disarranged params
         [Header("--Disarranged params--")]
         [Tooltip("押しても意味ないよ")]
         public bool o;
@@ -59,7 +65,7 @@ namespace Boid
         public float maxSpeed_d2 = 1.5f;
         [Tooltip("二回目の変化で変わる値")]
         public float neighborFov_d2 = 10.0f;
-
+        #endregion
         public void Reset()
         {
             // 変更されたパラメータをリセット
@@ -71,7 +77,7 @@ namespace Boid
             separationWeight = 6f;
             wallScale = 30f;
             wallDistance = 3f;
-            wallWeight = 1f;
+            wallWeight = 10f;
             alignmentWeight = 2f;
             cohesionWeight = 3f;
             targetSpeed = 1f;
@@ -79,7 +85,9 @@ namespace Boid
             speedDampingRatio = 0.035f;
             neighborFovRatio = 3.0f;
             disarrangedInverval = 20.0f;
-            avoidWeight = 0.025f;
+            avoidDistance = 9.0f;
+            avoidWeight = 1.0f;
+
         }
     }
 }

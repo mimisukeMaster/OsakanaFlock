@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UnityEngine.SceneManagement;
 
 namespace Boid.OOP
 {
@@ -21,8 +22,8 @@ namespace Boid.OOP
         {
             get { return boids_.AsReadOnly(); }
         }
+        public Transform[] Obstacles;
         public Vector3 ColliderSize;
-        Boid boid;
         float timer;
         int disarrangedStep = 1;
 
@@ -69,6 +70,20 @@ namespace Boid.OOP
 
             // 時間経過によるBoidsの変化
             UpdateParam();
+
+
+
+            // Debug.Log(Obstacles[0].transform.position);
+            // if (Input.GetMouseButtonDown(1))
+            // {
+            //     Vector3 launchPos = Camera.main.transform.position;
+            //     Transform obs = Instantiate(Obstacles[0], launchPos, Quaternion.identity);
+            //     // シーンのものを登録
+            //     Obstacles[0] = GameObject.Find("Obstacle_01(Clone)").transform;
+            //     Rigidbody obs_rb = Obstacles[0].GetComponent<Rigidbody>();
+            //     obs_rb.AddForce(new Vector3(-4000, -2000f, 4000));
+            // }
+            // if (Input.GetKeyDown(KeyCode.Space)) SceneManager.LoadScene("FlockingScene");
         }
 
         void UpdateParam()

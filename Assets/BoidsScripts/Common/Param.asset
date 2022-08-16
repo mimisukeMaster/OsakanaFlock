@@ -20,7 +20,7 @@ MonoBehaviour:
   separationWeight: 6
   wallScale: 30
   wallDistance: 3
-  wallWeight: 1
+  wallWeight: 10
   alignmentWeight: 2
   cohesionWeight: 3
   targetSpeed: 1
@@ -28,7 +28,8 @@ MonoBehaviour:
   speedDampingRatio: 0.035
   neighborFovRatio: 3
   disarrangedInverval: 20
-  avoidWeight: 0.1
+  avoidDistance: 9
+  avoidWeight: 1
   o: 0
   neighborFov_d1: 5
   minSpeed_d2: 1

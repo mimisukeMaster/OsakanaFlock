@@ -16,8 +16,6 @@ namespace Boid.OOP
         bool movingToTaget;   //目標の点への移動フラグ
         Vector3 BoundingBox;  // 移動範囲のバウンディングボックス
 
-        Collider myDetectRange; // 障害物検知範囲
-
         float HP;
         float maxHP = 10.0f;
         float HPRatio = 0.1f;
@@ -28,7 +26,6 @@ namespace Boid.OOP
             velocity = transform.forward * param.initSpeed;
 
             BoundingBox = simulation.ColliderSize;
-            myDetectRange = GetComponent<Collider>();
 
             HP = maxHP;
         }
@@ -41,6 +38,7 @@ namespace Boid.OOP
             UpdateAlignment();
             UpdateCohesion();
             UpdateMove();
+            UpdateAvoidObstacles(simulation.Obstacles);
 
             if (movingToTaget) UpdateMoveToPoint(Vector3.up * 3);
 
@@ -194,23 +192,39 @@ namespace Boid.OOP
         }
 
         /// <summary>
-        /// 障害判定：<br></br>
-        /// Obstacle: 検知したら その物体に近ければ近いほど逃げる方向のベクトルを強めaccelに加算
+        /// 障害物に近ければ近いほど逃げる方向のベクトルを強めaccelに加算
         /// </summary>
-        /// <param name="other">衝突相手</param>
-        void OnCollisionEnter(Collision other)
+        void UpdateAvoidObstacles(Transform[] Obstalcles)
         {
-            Debug.Log("CLI");
-            if (other.gameObject.tag == "Obstacle")
+            foreach (Transform obs in simulation.Obstacles)
             {
-                Debug.Log("sharlk");
+                // 空間の距離がまだ避ける距離でないならなにもしない
+                if (Vector3.Distance(pos, obs.position) >= param.avoidDistance) break;
+
+                // Wallと違って六面から(反対側,一つの軸に二つよける対象がある)ではないので計算量はXYZ軸一回づつのみで済む
+                // Vector3.Distanceをとるとfloatが返されVector成分情報が失われてしまうので成分ごとにCalc
                 accel +=
-                 (transform.position - other.transform.position) * (1 / param.avoidWeight);
-                /// TODO
-                /// ぶつかった対象のオブジェクトの中心座標と自身の座標との比較なので相手がでかいとほかの部分のメッシュを貫通する可能性
-                /// 本当は最短のメッシュとの距離を取得してそれを逃げるベクトルに使いたい
+                    CalcAccelAgainstObstacle(pos.x - obs.transform.position.x, Vector3.right) +
+                    CalcAccelAgainstObstacle(pos.y - obs.transform.position.y, Vector3.up) +
+                    CalcAccelAgainstObstacle(pos.z - obs.transform.position.z, Vector3.forward);
+
+                Debug.DrawLine(pos, pos + accel, Color.magenta);
+
+                // なぜか軸方向の計算結果のみが反映されてる 
+                // 一つの成分が逃げる開始の値になってもほかの成分は平気なとき、一つの軸方向にのみaccleがかかってしまう
             }
         }
+
+        /// <summary>
+        /// 障害物から避ける計算処理
+        /// </summary>
+        /// <param name="distance">現在の自分と障害物との距離</param>
+        /// <param name="dir">計算するベクトル成分(軸)</param>
+        /// <returns name="dir">重みづけした逃げる方向のベクトル</returns>
+        /// <returns name="Vector3.zero">近くない場合はなし</returns>
+        Vector3 CalcAccelAgainstObstacle(float distance, Vector3 dir)
+         => dir * (param.avoidWeight / Mathf.Abs(distance / param.avoidDistance));
+
 
         /// <summary>
         /// 指定した座標までBoidを滑らかに誘導する
@@ -218,9 +232,9 @@ namespace Boid.OOP
         /// <param name="targetPos">指定した座標</param>
         void UpdateMoveToPoint(Vector3 targetPos)
         {
-            accel += (targetPos - transform.position) * param.targetSpeed;
+            accel += (targetPos - pos) * param.targetSpeed;
 
-            if (Vector3.Distance(targetPos, transform.position) <= param.proximityThr)
+            if (Vector3.Distance(targetPos, pos) <= param.proximityThr)
             {
                 // hpアップ処理
                 // boidのインスタンス変数としてHP用意 maxminspeed系はparam持ってるからここでは変更しない
