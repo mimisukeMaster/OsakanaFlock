@@ -13,7 +13,8 @@ namespace Boid.OOP
         Vector3 accel = Vector3.zero;
         List<Boid> neighbors = new List<Boid>();
 
-        bool movingToTaget;   //目標の点への移動フラグ
+        public bool DetectedObstacle; // 障害物を検知した際のフラグ
+        public bool movingToTaget;   //目標の点への移動フラグ
         Vector3 BoundingBox;  // 移動範囲のバウンディングボックス
 
         float HP;
@@ -107,7 +108,6 @@ namespace Boid.OOP
                 CalcAccelAgainstWall(+scaleYP - pos.y, Vector3.down) +
                 CalcAccelAgainstWall(+scaleZP - pos.z, Vector3.back);
         }
-
         Vector3 CalcAccelAgainstWall(float distance, Vector3 dir)
         {
             if (distance < param.wallDistance)
@@ -201,24 +201,23 @@ namespace Boid.OOP
                 // 空間の距離がまだ避ける距離でないならなにもしない
                 if (Vector3.Distance(pos, obs.position) >= param.avoidDistance) break;
 
+                // 見つけたらSimulation.detectedCountに見つけたBoidとして加算する
+                if (!DetectedObstacle)
+                {
+                    simulation.detectedCount++;
+                    DetectedObstacle = true;
+                    Debug.Log("++");
+                }
+
                 // Wallと違って六面から(反対側,一つの軸に二つよける対象がある)ではないので計算量はXYZ軸一回づつのみで済む
                 // Vector3.Distanceをとるとfloatが返されVector成分情報が失われてしまうので成分ごとにCalc
-                Vector3 X =
-                    CalcAccelAgainstObstacle(pos.x - obs.transform.position.x, Vector3.left);
-                Vector3 Y =
-                    CalcAccelAgainstObstacle(pos.y - obs.transform.position.y, Vector3.down);
-                Vector3 Z =
+                accel +=
+                    CalcAccelAgainstObstacle(pos.x - obs.transform.position.x, Vector3.left) +
+                    CalcAccelAgainstObstacle(pos.y - obs.transform.position.y, Vector3.down) +
                     CalcAccelAgainstObstacle(pos.z - obs.transform.position.z, Vector3.back);
 
-                Debug.DrawLine(pos, pos + X + Y + Z, Color.magenta);
-                // Debug.DrawLine(pos, pos + Y, Color.green);
-                // Debug.DrawLine(pos, pos + Z, Color.cyan);
+                Debug.DrawLine(pos, pos + accel, Color.magenta);
 
-
-                accel += X + Y + Z;
-
-                // なぜか軸方向の計算結果のみが反映されてる よるほうこうにいく　ちかいほどつよい
-                // 一つの成分が逃げる開始の値になってもほかの成分は平気なとき、一つの軸方向にのみaccleがかかってしまう
             }
         }
 
@@ -230,7 +229,7 @@ namespace Boid.OOP
         /// <returns name="dir">重みづけした逃げる方向のベクトル</returns>
         /// <returns name="Vector3.zero">近くない場合はなし</returns>
         Vector3 CalcAccelAgainstObstacle(float distance, Vector3 dir)
-         => dir * (param.avoidWeight / Mathf.Abs(distance / param.avoidDistance));
+         => dir * (param.avoidWeight / Mathf.Pow((Mathf.Abs(distance / param.avoidDistance)), 2));
 
 
         /// <summary>
@@ -244,8 +243,10 @@ namespace Boid.OOP
             if (Vector3.Distance(targetPos, pos) <= param.proximityThr)
             {
                 // hpアップ処理
-                // boidのインスタンス変数としてHP用意 maxminspeed系はparam持ってるからここでは変更しない
                 HP = maxHP;
+
+                /// TODO
+                /// 一定時間たったら諦めさせる処理
 
                 Debug.Log("REACHED!");
                 movingToTaget = false;

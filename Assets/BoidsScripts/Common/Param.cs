@@ -37,35 +37,22 @@ namespace Boid
         public float targetSpeed = 1f;
         [Tooltip("目標の点への移動をやめる距離のしきい値\n遅いほど3ルールが勝り" +
         "目標点に中々到達できないので周りを徘徊する\ntargetSpeedより顕著に現れる")]
-        public float proximityThr = 1.3f;
-        [Tooltip("時間とともに減速する速さの変化率\nTime.deltatimeにこの値をかけたもので毎フレームデクリメント")]
-        public float speedDampingRatio = 0.035f;
-        [Tooltip("時間とともに近隣の認識角が小さくなっていく、その下降比率\n" +
-        "Time.deltatimeにこの値をかけたもので毎フレームデクリメント")]
-        public float neighborFovRatio = 3.0f;
-        [Tooltip("集団の動きが乱れるパラメータ設定に変わっていく間隔")]
-        public float disarrangedInverval = 20.0f;
+        public float proximityThr = 0.5f;
         [Tooltip("障害物を避け始める残りの障害物との距離")]
         public float avoidDistance = 9.0f;
         [Tooltip("障害物を避けるウエイト、大きいほど忌避")]
         public float avoidWeight = 1.0f;
+        [Tooltip("障害物を検知したBoidの数")]
+        public int detectedObstacleBoids = 15;
+        [Tooltip("群れてる期間(purfulと並立)")]
+        public float Duration_flocking = 20.0f;
+        [Tooltip("群れているか")]
+        public bool isFlocking = true;
+        [Tooltip("びんびん速度がある期間(flockingと並立)")]
+        public float DurationPowerful = 40.0f;
+        [Tooltip("びんびん速度があるか")]
+        public bool isPoweful = true;
 
-
-        #region disarranged params
-        [Header("--Disarranged params--")]
-        [Tooltip("押しても意味ないよ")]
-        public bool o;
-        [Header("Step1")]
-        [Tooltip("一回目の変化で変わる値")]
-        public float neighborFov_d1 = 5.0f;
-        [Header("Step2")]
-        [Tooltip("二回目の変化で変わる値")]
-        public float minSpeed_d2 = 1.0f;
-        [Tooltip("二回目の変化で変わる値")]
-        public float maxSpeed_d2 = 1.5f;
-        [Tooltip("二回目の変化で変わる値")]
-        public float neighborFov_d2 = 10.0f;
-        #endregion
         public void Reset()
         {
             // 変更されたパラメータをリセット
@@ -80,14 +67,17 @@ namespace Boid
             wallWeight = 1f;
             alignmentWeight = 2f;
             cohesionWeight = 3f;
+
+            /// --my param--
             targetSpeed = 1f;
-            proximityThr = 1.3f;
-            speedDampingRatio = 0.035f;
-            neighborFovRatio = 3.0f;
-            disarrangedInverval = 20.0f;
+            proximityThr = 0.5f;
             avoidDistance = 9.0f;
             avoidWeight = 1.0f;
-
+            detectedObstacleBoids = 15;
+            Duration_flocking = 20.0f;
+            DurationPowerful = 40.0f;
+            isFlocking = true;
+            isPoweful = true;
         }
     }
 }

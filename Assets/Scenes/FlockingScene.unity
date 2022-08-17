@@ -159,6 +159,7 @@ MonoBehaviour:
   Obstacles:
   - {fileID: 1679055158}
   ColliderSize: {x: 0, y: 0, z: 0}
+  detectedCount: 0
 --- !u!4 &26877787
 Transform:
   m_ObjectHideFlags: 0
@@ -211,7 +212,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7457242380108909927, guid: 3abaf191736983747b2ac8023d3a1cea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -34.7
+      value: -24.43
       objectReference: {fileID: 0}
     - target: {fileID: 7457242380108909927, guid: 3abaf191736983747b2ac8023d3a1cea, type: 3}
       propertyPath: m_LocalRotation.w

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using UnityEngine.SceneManagement;
 
 namespace Boid.OOP
 {
@@ -24,8 +23,10 @@ namespace Boid.OOP
         }
         public Transform[] Obstacles;
         public Vector3 ColliderSize;
-        float timer;
-        int disarrangedStep = 1;
+        public int detectedCount = 0;
+        float timer_powerful = 0;
+        float timer_flocking = 0;
+
 
         void Awake()
         {
@@ -34,7 +35,9 @@ namespace Boid.OOP
             // パラメータをリセット
             param.Reset();
 
-            timer = Time.realtimeSinceStartup;
+            //timer_disarraged = Time.realtimeSinceStartup;
+            timer_powerful = Time.realtimeSinceStartup;
+            timer_flocking = Time.realtimeSinceStartup;
         }
 
         void AddBoid()
@@ -69,47 +72,92 @@ namespace Boid.OOP
             }
 
             // 時間経過によるBoidsの変化
-            UpdateParam();
 
 
+            // 障害物処理
+            if (detectedCount >= param.detectedObstacleBoids)
+            {
+                SetFlocking();
+                ResetBoidsDetectedObstacleFlag(boids_);
+            }
+            // 一定時間むれたあと
+            if (Time.realtimeSinceStartup - timer_flocking > param.Duration_flocking && param.isFlocking)
+            {
+                SetDeFlocking();
+                ResetBoidsDetectedObstacleFlag(boids_);
+            }
 
-            // Debug.Log(Obstacles[0].transform.position);
-            // if (Input.GetMouseButtonDown(1))
-            // {
-            //     Vector3 launchPos = Camera.main.transform.position;
-            //     Transform obs = Instantiate(Obstacles[0], launchPos, Quaternion.identity);
-            //     // シーンのものを登録
-            //     Obstacles[0] = GameObject.Find("Obstacle_01(Clone)").transform;
-            //     Rigidbody obs_rb = Obstacles[0].GetComponent<Rigidbody>();
-            //     obs_rb.AddForce(new Vector3(-4000, -2000f, 4000));
-            // }
-            // if (Input.GetKeyDown(KeyCode.Space)) SceneManager.LoadScene("FlockingScene");
+            // 餌やり処理
+            if (Input.GetMouseButtonDown(0))
+            {
+                SetBoidPowerUp();
+            }
+            // 餌与えてから一定期間たった後
+            if (Time.realtimeSinceStartup - timer_powerful > param.DurationPowerful && param.isPoweful)
+            {
+                SetBoidPowerDown();
+                ResetBoidsMovingToTagetFlag(boids_);
+
+            }
+
         }
 
-        void UpdateParam()
+
+        void ResetBoidsDetectedObstacleFlag(List<Boid> boids)
         {
-
-            // 指定秒たつごとに乱れる
-            if (Time.realtimeSinceStartup - timer > param.disarrangedInverval)
+            Debug.Log("群れさせる");
+            foreach (Boid boid in boids)
             {
-                if (disarrangedStep == 1)
-                {
-                    param.neighborFov = param.neighborFov_d1;
-                    Debug.Log("step１");
-                }
-                else if (disarrangedStep == 2)
-                {
-                    param.minSpeed = param.minSpeed_d2;
-                    param.maxSpeed = param.maxSpeed_d2;
-                    param.neighborFov = param.neighborFov_d2;
-                    Debug.Log("step2");
-                }
-                // タイマー更新
-                timer = Time.realtimeSinceStartup;
-
-                Debug.Log("ガーン");
-                disarrangedStep++;
+                boid.DetectedObstacle = false;
             }
         }
+        void ResetBoidsMovingToTagetFlag(List<Boid> boids)
+        {
+            Debug.Log("餌はもうつきた");
+            foreach (Boid boid in boids)
+            {
+                boid.movingToTaget = false;
+            }
+        }
+
+        public void SetFlocking()
+        {
+            // 群れを形成するようにパラメータを変更
+            param.minSpeed = 2f;
+            param.maxSpeed = 5f;
+            param.isPoweful = true;
+            timer_powerful = Time.realtimeSinceStartup;
+            param.neighborFov = 90f;
+            param.isFlocking = true;
+            timer_flocking = Time.realtimeSinceStartup;
+            detectedCount = 0;
+        }
+        public void SetDeFlocking()
+        {
+            // 群れが離散するようにパラメータを変更
+            param.neighborFov = 1f;
+            param.isFlocking = false;
+            detectedCount = 0;
+        }
+        void SetBoidPowerUp()
+        {
+            // 餌やり開始
+            param.minSpeed = 2;
+            param.maxSpeed = 5;
+            param.isPoweful = true;
+            timer_powerful = Time.realtimeSinceStartup;
+            //param.neighborFov = 90f;
+            //param.isFlocking = true;
+            //timer_flocking = Time.realtimeSinceStartup;
+
+        }
+        void SetBoidPowerDown()
+        {
+            //餌やり終了処理（与えた後一定時間後元気なくなる処理）
+            param.minSpeed = 1.0f;
+            param.maxSpeed = 1.5f;
+            param.isPoweful = false;
+        }
+
     }
 }
