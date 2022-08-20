@@ -94,5 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 255f50ea8a7824702a7283efd810b4d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Obstacles:
-  - {fileID: 7457242380108909914, guid: 3abaf191736983747b2ac8023d3a1cea, type: 3}
+  DetectedObstacle: 0
+  movingToTaget: 0
+  TargetPos: {x: 0, y: 0, z: 0}
+  myRenderer: {fileID: 0}

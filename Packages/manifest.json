@@ -9,7 +9,9 @@
     }
   ],
   "dependencies": {
+    "com.unity.2d.animation": "5.0.10",
     "com.unity.ide.vscode": "1.2.5",
+    "com.unity.textmeshpro": "3.0.6",
     "com.unity.ugui": "1.0.0",
     "jp.keijiro.mediapipe.blazepalm": "1.0.2",
     "jp.keijiro.mediapipe.handlandmark": "1.0.1",

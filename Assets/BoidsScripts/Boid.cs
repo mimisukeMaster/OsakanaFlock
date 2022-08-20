@@ -12,13 +12,15 @@ namespace Boid.OOP
         public Vector3 velocity { get; private set; }
         Vector3 accel = Vector3.zero;
         List<Boid> neighbors = new List<Boid>();
+        Vector3 BoundingBox;  // 移動範囲のバウンディングボックス
 
         public bool DetectedObstacle; // 障害物を検知した際のフラグ
         public bool movingToTaget;   //目標の点への移動フラグ
-        Vector3 BoundingBox;  // 移動範囲のバウンディングボックス
+        public Vector3 TargetPos; // 集まる座標
+        public MeshRenderer myRenderer; // Boid自身のレンダラ 画面内外判定に使う
 
         float HP;
-        float maxHP = 10.0f;
+        float maxHP = 20.0f;
         float HPRatio = 0.1f;
         void Start()
         {
@@ -29,6 +31,7 @@ namespace Boid.OOP
             BoundingBox = simulation.ColliderSize;
 
             HP = maxHP;
+            myRenderer = GetComponent<MeshRenderer>();
         }
 
         void Update()
@@ -41,12 +44,15 @@ namespace Boid.OOP
             UpdateMove();
             UpdateAvoidObstacles(simulation.Obstacles);
 
-            if (movingToTaget) UpdateMoveToPoint(Vector3.up * 3);
+            if (movingToTaget) UpdateMoveToPoint(TargetPos);
 
-            if (Input.GetMouseButtonDown(0)) movingToTaget = true;
+            //if (Input.GetMouseButtonDown(0)) movingToTaget = true;
 
             // HPを徐々に減らす
             HP -= Time.deltaTime;
+
+            // HPが0になったら死ぬ
+            if (HP < 0) simulation.RemoveBoid(this);
 
         }
 
@@ -198,8 +204,9 @@ namespace Boid.OOP
         {
             foreach (Transform obs in simulation.Obstacles)
             {
-                // 空間の距離がまだ避ける距離でないならなにもしない
-                if (Vector3.Distance(pos, obs.position) >= param.avoidDistance) break;
+                // 空間の距離がまだ避ける距離でない、または非アクティブならなにもしない
+                if (Vector3.Distance(pos, obs.position) >= param.avoidDistance ||
+                !obs.gameObject.activeInHierarchy) continue;
 
                 // 見つけたらSimulation.detectedCountに見つけたBoidとして加算する
                 if (!DetectedObstacle)
@@ -240,14 +247,13 @@ namespace Boid.OOP
         {
             accel += (targetPos - pos) * param.targetSpeed;
 
+            Debug.DrawLine(pos, targetPos, Color.magenta);
             if (Vector3.Distance(targetPos, pos) <= param.proximityThr)
             {
                 // hpアップ処理
                 HP = maxHP;
 
-                /// TODO
-                /// 一定時間たったら諦めさせる処理
-
+                // 着いたらMoveToPointやめる
                 Debug.Log("REACHED!");
                 movingToTaget = false;
             }

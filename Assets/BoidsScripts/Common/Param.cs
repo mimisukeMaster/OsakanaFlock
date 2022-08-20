@@ -8,17 +8,17 @@ namespace Boid
     public class Param : ScriptableObject
     {
         [Tooltip("発射速度")]
-        public float initSpeed = 2f;
+        public float initSpeed = 0.5f;
         [Tooltip("移動中の最小速度")]
-        public float minSpeed = 2f;
+        public float minSpeed = 3f;
         [Tooltip("移動中の最大速度")]
-        public float maxSpeed = 5f;
+        public float maxSpeed = 7f;
         [Tooltip("近隣の個体として認識する距離")]
-        public float neighborDistance = 2f;
+        public float neighborDistance = 2.5f;
         [Tooltip("近隣の個体として認識する前方角")]
-        public float neighborFov = 90f;
+        public float neighborFov = 120f;
         [Tooltip("分離のウエイト、大きいほどばらばらに")]
-        public float separationWeight = 6f;
+        public float separationWeight = 6.5f;
         [Tooltip("仮想の壁のサイズ")]
         public float wallScale = 30f;
         [Tooltip("壁から離れようとする残りの壁との距離")]
@@ -37,7 +37,7 @@ namespace Boid
         public float targetSpeed = 1f;
         [Tooltip("目標の点への移動をやめる距離のしきい値\n遅いほど3ルールが勝り" +
         "目標点に中々到達できないので周りを徘徊する\ntargetSpeedより顕著に現れる")]
-        public float proximityThr = 0.5f;
+        public float proximityThr = 0.2f;
         [Tooltip("障害物を避け始める残りの障害物との距離")]
         public float avoidDistance = 9.0f;
         [Tooltip("障害物を避けるウエイト、大きいほど忌避")]
@@ -49,7 +49,7 @@ namespace Boid
         [Tooltip("群れているか")]
         public bool isFlocking = true;
         [Tooltip("びんびん速度がある期間(flockingと並立)")]
-        public float DurationPowerful = 40.0f;
+        public float DurationPowerful = 10.0f;
         [Tooltip("びんびん速度があるか")]
         public bool isPoweful = true;
 
@@ -57,11 +57,11 @@ namespace Boid
         {
             // 変更されたパラメータをリセット
             initSpeed = 2f;
-            minSpeed = 2f;
-            maxSpeed = 5f;
-            neighborDistance = 2f;
-            neighborFov = 90f;
-            separationWeight = 6f;
+            minSpeed = 3f;
+            maxSpeed = 7f;
+            neighborDistance = 2.5f;
+            neighborFov = 120f;
+            separationWeight = 6.5f;
             wallScale = 30f;
             wallDistance = 3f;
             wallWeight = 1f;
@@ -70,12 +70,12 @@ namespace Boid
 
             /// --my param--
             targetSpeed = 1f;
-            proximityThr = 0.5f;
+            proximityThr = 0.2f;
             avoidDistance = 9.0f;
             avoidWeight = 1.0f;
             detectedObstacleBoids = 15;
             Duration_flocking = 20.0f;
-            DurationPowerful = 40.0f;
+            DurationPowerful = 10.0f;
             isFlocking = true;
             isPoweful = true;
         }

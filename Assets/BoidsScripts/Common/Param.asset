@@ -13,22 +13,22 @@ MonoBehaviour:
   m_Name: Param
   m_EditorClassIdentifier: 
   initSpeed: 2
-  minSpeed: 2
-  maxSpeed: 5
-  neighborDistance: 2
-  neighborFov: 90
-  separationWeight: 6
+  minSpeed: 3
+  maxSpeed: 7
+  neighborDistance: 2.5
+  neighborFov: 120
+  separationWeight: 6.5
   wallScale: 30
   wallDistance: 3
   wallWeight: 1
   alignmentWeight: 2
   cohesionWeight: 3
   targetSpeed: 1
-  proximityThr: 0.5
+  proximityThr: 0.2
   avoidDistance: 9
   avoidWeight: 1
   detectedObstacleBoids: 15
   Duration_flocking: 20
   isFlocking: 1
-  DurationPowerful: 40
+  DurationPowerful: 10
   isPoweful: 1

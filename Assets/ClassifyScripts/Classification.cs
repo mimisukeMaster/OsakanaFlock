@@ -90,7 +90,7 @@ namespace MediaPipe.HandPose
 
             for (int i = 0; i < pointVector.Count / 2; i++)
             {
-                Debug.Log("X[" + i + "]: " + pointVector[i * 2] + "  Y[" + i + "]: " + pointVector[i * 2 + 1] + "\n");
+               // Debug.Log("X[" + i + "]: " + pointVector[i * 2] + "  Y[" + i + "]: " + pointVector[i * 2 + 1] + "\n");
             }
 
 
