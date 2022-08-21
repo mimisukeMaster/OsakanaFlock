@@ -7,9 +7,13 @@
             "Pause",
             "Crescendo",
             "Finish",
+            "Point"
+            /*"Pause",
+            "Crescendo",
+            "Finish",
             "Shake",
             "Diminuendo",
-            "Point"
+            "Point"*/
         };
 
         return synset;

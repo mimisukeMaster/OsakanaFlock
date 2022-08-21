@@ -54,50 +54,59 @@ public class ManipulateController : MonoBehaviour
         /// 満タンだよ示す処理ui
 
 
-        // ハンドジェスチャー認識をONにしたら
-        if (Input.GetMouseButtonDown(0))
+        // マウスクリックされ続け、Action可能なら
+        if (Input.GetMouseButton(0) /*&& actionReadyFlag*/)
         {
-            // switch (classfication.targetText.text)
-            // {
-            //     // Obstacle
-            //     case ("Finish"):
-            // ローカル軸に沿った、奥行き・start-end距離のベクトル
-            Vector3 camVectorForward = cam.transform.forward * lookObsDistance;
-            Vector3 camVectorRight = cam.transform.right * nonVisibleDistance;
+            // クリック中ジェスチャ判定することで待機が再現できる(Finish, Point以外ははじくから)
+            switch (classfication.inferenceResult)
+            {
 
-            // 生成座標
-            spawnPos = camVectorForward - camVectorRight;
+                // Obstacle
+                case "Finish":
+                    //ローカル軸に沿った、奥行き・start-end距離のベクトル
+                    Vector3 camVectorForward = cam.transform.forward * lookObsDistance;
+                    Vector3 camVectorRight = cam.transform.right * nonVisibleDistance;
 
-            // 消える座標
-            disappearPos = camVectorForward + camVectorRight;
+                    // 生成座標
+                    spawnPos = camVectorForward - camVectorRight;
 
-            // 生成する座標にセット
-            Obstacle.transform.position = spawnPos;
+                    // 消える座標
+                    disappearPos = camVectorForward + camVectorRight;
 
-            // 移動開始のフラグ立てる →移動開始
-            //isMovingObstacle = true;
+                    // 生成する座標にセット
+                    Obstacle.transform.position = spawnPos;
 
-            // スタート時間をキャッシュ(Vector3.Lerpで移動するときに使うため)
-            startTime = Time.time;
+                    // 移動開始のフラグ立てる →移動開始
+                    isMovingObstacle = true;
 
-            //     break;
+                    // スタート時間をキャッシュ(Vector3.Lerpで移動するときに使うため)
+                    startTime = Time.time;
 
-            // // Feed
-            // case ("Point"):
-            /// 餌やりフラグ立てる → <seealso cref="Simulation.Update()"/>で処理
-            simulation.isFeeded = true;
+                    // 発動したのでリセット
+                    chargeTime = 0;
+                    actionReadyFlag = false;
+                    break;
 
-            /// Boidsが向かう座標をカメラの中央に設定する → <seealso cref="Simulation.SetBoidTargetPos(Vector3)"/>で処理
-            ///  障害物と同じカメラからの距離
-            simulation.SetBoidTargetPos(cam.transform.forward * lookTargetDistance);
-            Debug.DrawLine(cam.transform.position, cam.transform.forward * lookTargetDistance, Color.red);
-            //     break;
+                // Feed
+                case "Point":
+                    /// 餌やりフラグ立てる → <seealso cref="Simulation.Update()"/>で処理
+                    simulation.isFeeded = true;
 
-            // // Others
-            // default:
-            //     break;
+                    /// Boidsが向かう座標をカメラの中央に設定する → <seealso cref="Simulation.SetBoidTargetPos(Vector3)"/>で処理
+                    ///  障害物と同じカメラからの距離
+                    simulation.SetBoidTargetPos(cam.transform.forward * lookTargetDistance);
+                    Debug.DrawLine(cam.transform.position, cam.transform.forward * lookTargetDistance, Color.red);
+                    Debug.Log("point ges");
+                    // 発動したのでリセット
+                    chargeTime = 0;
+                    actionReadyFlag = false;
+                    break;
 
-            // }
+                // Others
+                default:
+                    break;
+
+            }
         }
         Debug.DrawLine(cam.transform.position, spawnPos, Color.yellow);
         Debug.DrawLine(cam.transform.position, disappearPos, Color.green);

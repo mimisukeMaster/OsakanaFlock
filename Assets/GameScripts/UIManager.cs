@@ -57,7 +57,6 @@ public class UIManager : MonoBehaviour
         sc_isPowerful = param.isPoweful == true ? 1 : 0.5f;
         NumOfBoids = simulation.GetNowAliveBoids();
 
-        Debug.Log(NumOfBoids);
         // 現在のスコアを反映
         UIGauge.value = sc_isFlocking * sc_isPowerful * NumOfBoids;
 

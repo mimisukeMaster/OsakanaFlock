@@ -20,7 +20,7 @@ namespace Boid.OOP
         public MeshRenderer myRenderer; // Boid自身のレンダラ 画面内外判定に使う
 
         float HP;
-        float maxHP = 20.0f;
+        float maxHP = 120.0f;
         float HPRatio = 0.1f;
         void Start()
         {

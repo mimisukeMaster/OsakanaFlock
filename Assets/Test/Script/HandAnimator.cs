@@ -37,7 +37,7 @@ namespace MediaPipe.HandPose
         (13, 14), (14, 15), (15, 16),               // Ring finger
         (17, 18), (18, 19), (19, 20),               // Pinky
         (0, 17), (2, 5), (5, 9), (9, 13), (13, 17)  // Palm
-    };
+        };
 
         Matrix4x4 CalculateJointXform(Vector3 pos)
           => Matrix4x4.TRS(pos, Quaternion.identity, Vector3.one * 0.07f);
@@ -88,31 +88,31 @@ namespace MediaPipe.HandPose
 
                 if (i == 4)
                 {
-                    MyBallColor[i].color = new Color(1f, 0, 0);
+                    MyBallColor[i].color = Color.red;
                     Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
                     //Debug.Log("[4]: " + _pipeline.GetKeyPoint(i));
                 }
                 else if (i == 8)
                 {
-                    MyBallColor[i].color = new Color(1f, 1f, 0);
+                    MyBallColor[i].color = Color.blue;
                     Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
                     //Debug.Log("[8]: " + _pipeline.GetKeyPoint(i));
                 }
                 else if (i == 12)
                 {
-                    MyBallColor[i].color = new Color(0, 1f, 0);
+                    MyBallColor[i].color = Color.yellow;
                     Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
                     //Debug.Log("[12]: " + _pipeline.GetKeyPoint(i));
                 }
                 else if (i == 16)
                 {
-                    MyBallColor[i].color = new Color(0, 1f, 1f);
+                    MyBallColor[i].color = Color.green;
                     Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
                     //Debug.Log("[16]: " + _pipeline.GetKeyPoint(i));
                 }
                 else if (i == 20)
                 {
-                    MyBallColor[i].color = new Color(0, 0, 1f);
+                    MyBallColor[i].color = Color.gray;
                     Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
                     //Debug.Log("[20]: " + _pipeline.GetKeyPoint(i));
                 }

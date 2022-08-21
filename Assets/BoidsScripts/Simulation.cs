@@ -162,7 +162,7 @@ namespace Boid.OOP
             foreach (Boid boid in boids)
             {
                 // 現在見えていない(レンダリングされていない)ならそのBoidのFlagは上げない
-                if (!boid.myRenderer.isVisible) continue;
+                //if (!boid.myRenderer.isVisible) continue;
 
                 boid.movingToTaget = true;
                 Debug.Log("俺指名された餌食える");

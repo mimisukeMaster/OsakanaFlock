@@ -12,6 +12,7 @@ namespace MediaPipe.HandPose
         public NNModel modelAsset;
         private Model m_RuntimeModel;
         private IWorker m_worker;
+        public string inferenceResult;
 
         //public RenderTexture targetTexture;
         public Text targetText;
@@ -20,7 +21,11 @@ namespace MediaPipe.HandPose
         public WebcamInput _webcam = null;
 
         // History 用の配列とカウンター 2次元リスト
-        List<float> pointVectorList = new List<float>();
+        List<float> KeyPointX = new List<float>(21);
+        List<float> KeyPointY = new List<float>(21);
+        List<float> pointVector = new List<float>(42);
+        List<float> AbsKeyPointXY = new List<float>(42);
+        List<float> pointVectorList = new List<float>(672);
         private int seqCount = 0;
 
 
@@ -42,10 +47,8 @@ namespace MediaPipe.HandPose
             _pipelineCla.UseAsyncReadback = true;
             _pipelineCla.ProcessImage(_webcam.Texture);
 
-            //1 List型でXY別々に値入れるList作成,然るべき値代入
-            List<float> KeyPointX = new List<float>();
-            List<float> KeyPointY = new List<float>();
 
+            //1 List型でXY別々に値入れるList作成,然るべき値代入
             for (int i = 0; i < HandPipeline.KeyPointCount; i++)
             {
                 KeyPointX.Add(_pipelineCla.GetKeyPoint(i).x);
@@ -65,22 +68,26 @@ namespace MediaPipe.HandPose
             }
 
             //4 別々になっているX,Yの手の座標値Listを一つのリストにする
-            List<float> pointVector = new List<float>();
 
             for (int m = 0; m < HandPipeline.KeyPointCount; m++)
             {
                 pointVector.Add(KeyPointX[m]);
                 pointVector.Add(KeyPointY[m]);
             }
+            KeyPointX.Clear();
+            KeyPointY.Clear();
+            KeyPointX.TrimExcess();
+            KeyPointY.TrimExcess();
 
             //5 合成したListから最大値を見つける  一個一個の要素に対し絶対値をとりその上最大値を見つける
-            List<float> AbsKeyPointXY = new List<float>();
 
             for (int k = 0; k < pointVector.Count; k++)
             {
                 AbsKeyPointXY.Add(Mathf.Abs(pointVector[k]));
             }
             float XYmax = AbsKeyPointXY.Max();
+            AbsKeyPointXY.Clear();
+            AbsKeyPointXY.TrimExcess();
 
             //6 各々のListの各要素に対し, 5 で見つけた最大値で割り正規化  それをまたListに上書きする
             for (int l = 0; l < pointVector.Count; l++)
@@ -88,14 +95,10 @@ namespace MediaPipe.HandPose
                 pointVector[l] = pointVector[l] / XYmax;
             }
 
-            for (int i = 0; i < pointVector.Count / 2; i++)
-            {
-               // Debug.Log("X[" + i + "]: " + pointVector[i * 2] + "  Y[" + i + "]: " + pointVector[i * 2 + 1] + "\n");
-            }
-
-
             //listにlistの要素を末尾に追加しシーケンスをUpdateのループにより形成していく これを推論に持っていく
             pointVectorList.AddRange(pointVector);
+            pointVector.Clear();
+            pointVector.TrimExcess();
 
             seqCount += 1;
             if (seqCount == 16)
@@ -104,7 +107,8 @@ namespace MediaPipe.HandPose
                 Tensor handInput = new Tensor(1, 1, 1, 672, pointVectorList.ToArray(), "");
 
                 // 2次元Listの初期化
-                pointVectorList = new List<float>();
+                pointVectorList.Clear();
+                pointVectorList.TrimExcess();
 
                 // カウンタの初期化
                 seqCount = 0;
@@ -132,12 +136,11 @@ namespace MediaPipe.HandPose
                     maxIndex = i;
                 }
             }
-
-            targetText.text = Library.getImageNetSynset()[maxIndex];
+            inferenceResult = Library.getImageNetSynset()[maxIndex];
+            targetText.text = inferenceResult;
             //Debug.Log("推論した結果　" + output);
             output.Dispose();   //各ステップごとにTensorは破棄する必要がある(メモリリーク回避のため)
         }
-
         private void OnDestroy()
         {
             m_worker.Dispose(); //終了時に破棄する
