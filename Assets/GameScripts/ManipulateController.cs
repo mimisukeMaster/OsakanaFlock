@@ -18,19 +18,19 @@ public class ManipulateController : MonoBehaviour
 
     bool actionReadyFlag;
     bool isMovingObstacle;
-    float chargeTime = 0;
+    public float chargeTime = 0;
+    public float chargeTimeMax = 10;
     float sensitiveRotate = 5.0f;
     float lookObsDistance = 12f;
     float nonVisibleDistance = 13f;
     float lookTargetDistance = 15f;
     float startTime;
-    float obsSpeed = 100;
+    float obsSpeed = 100f;
     Vector3 spawnPos;
     Vector3 disappearPos;
     Vector3 obsVelocity = Vector3.zero;
     GameObject Obstacle;
 
-    const float chargeTimeMax = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -48,14 +48,14 @@ public class ManipulateController : MonoBehaviour
         // 秒計算
         chargeTime += Time.deltaTime;
 
-        // Action可能フラグを立てる
+        // Action可能フラグを立てる 満タンだよ示す処理UI→ UIManager
         if (chargeTime >= chargeTimeMax) actionReadyFlag = true;
 
-        /// 満タンだよ示す処理ui
+        
 
 
         // マウスクリックされ続け、Action可能なら
-        if (Input.GetMouseButton(0) /*&& actionReadyFlag*/)
+        if (Input.GetMouseButton(0) && actionReadyFlag)
         {
             // クリック中ジェスチャ判定することで待機が再現できる(Finish, Point以外ははじくから)
             switch (classfication.inferenceResult)

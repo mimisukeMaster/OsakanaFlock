@@ -9,7 +9,16 @@ public class UIManager : MonoBehaviour
 {
     // UI objects
     [SerializeField]
-    Slider UIGauge;
+    Slider ScoreGauge;  
+    [SerializeField]
+    Slider ActionGauge;
+    [SerializeField]
+    Sprite ActionGaugeImg;
+    [SerializeField]
+    Sprite ActionGaugeImg_max;
+    [SerializeField]
+    Image ActionGaugeContent;
+
     [SerializeField]
     Image IsFlockingCursor;
     [SerializeField]
@@ -30,13 +39,16 @@ public class UIManager : MonoBehaviour
     Sprite isPowerfulFalseImg;
 
 
+
     [SerializeField]
     Param param;
     [SerializeField]
     Simulation simulation;
+    [SerializeField]
+    ManipulateController manipulateController;
 
-    float sc_isFlocking;
-    float sc_isPowerful;
+    float score_isFlocking;
+    float score_isPowerful;
     float NumOfBoids;
 
     bool isFlockTrueAnimation;
@@ -46,25 +58,33 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         // UIバーのMAX時を設定する
-        UIGauge.maxValue = 1 * 1 * simulation.boidCount;
+        ScoreGauge.maxValue = 1 * 1 * simulation.boidCount;
+        ActionGauge.maxValue = manipulateController.chargeTimeMax;
     }
 
     // Update is called once per frame
     void Update()
     {
         // スコア計算　他の処理が入ったらCaculateScore()つくる
-        sc_isFlocking = param.isFlocking == true ? 1 : 0.5f;
-        sc_isPowerful = param.isPoweful == true ? 1 : 0.5f;
+        score_isFlocking = param.isFlocking == true ? 1 : 0.5f;
+        score_isPowerful = param.isPoweful == true ? 1 : 0.5f;
         NumOfBoids = simulation.GetNowAliveBoids();
 
         // 現在のスコアを反映
-        UIGauge.value = sc_isFlocking * sc_isPowerful * NumOfBoids;
+        ScoreGauge.value = score_isFlocking * score_isPowerful * NumOfBoids;
+
+        // 命令ゲージ計算
+        ActionGauge.value = manipulateController.chargeTime;
+
+        // 満タンならSpriteを変える
+        if(ActionGauge.value == ActionGauge.maxValue) ActionGaugeContent.sprite = ActionGaugeImg_max;
+        else ActionGaugeContent.sprite = ActionGaugeImg;
 
         // isFlocking, isPowerful の信号処理
         if (!isFlockTrueAnimation)
         {
             // isFlocking中なら
-            if (sc_isFlocking == 1 && !isFlockTrueAnimation)
+            if (score_isFlocking == 1 && !isFlockTrueAnimation)
             {
                 StartCoroutine(isFlockTrueAnim());
             }
@@ -74,7 +94,7 @@ public class UIManager : MonoBehaviour
         if (!isPowerTrueAnimation)
         {
             // isPowerful中なら
-            if (sc_isPowerful == 1)
+            if (score_isPowerful == 1)
             {
                 StartCoroutine(isPowerfulTrueAnim());
             }
