@@ -134,7 +134,7 @@ namespace MediaPipe.HandPose
             }
 
             // UI update
-            _monitorUI.texture = _webcam.Texture;
+            //_monitorUI.texture = _webcam.Texture;
         }
 
         #endregion

@@ -15,6 +15,8 @@ namespace Boid.OOP
 
         [SerializeField]
         Param param;
+        [SerializeField]
+        GameManager gameManager;
 
         List<Boid> boids_ = new List<Boid>();
         public ReadOnlyCollection<Boid> boids
@@ -62,8 +64,11 @@ namespace Boid.OOP
         // HP0のBoidを消す
         public void RemoveBoid(Boid rip_boid)
         {
-            if (boids_.Count == 0) return;
-
+            if (boids_.Count == 0)
+            {
+                gameManager.BoidsAreAllDead = true;
+                return;
+            }
             // var lastIndex = boids_.Count - 1;
             // var boid = boids_[lastIndex];
 
@@ -114,7 +119,7 @@ namespace Boid.OOP
                 SetBoidsMovingToTargetFlag(boids_);
             }
             // 餌与えてから一定期間たった後
-            if (Time.realtimeSinceStartup - timer_powerful > param.DurationPowerful && param.isPoweful)
+            if (Time.realtimeSinceStartup - timer_powerful > param.DurationPowerful && param.isPowerful)
             {
                 SetBoidPowerDown();
                 ResetBoidsMovingToTagetFlag(boids_);
@@ -139,7 +144,7 @@ namespace Boid.OOP
             // 群れを形成するようにパラメータを変更
             param.minSpeed = 3f;
             param.maxSpeed = 7f;
-            param.isPoweful = true;
+            param.isPowerful = true;
             timer_powerful = Time.realtimeSinceStartup;
             param.neighborFov = 120f;
             param.neighborDistance = 2.5f;
@@ -181,7 +186,7 @@ namespace Boid.OOP
             // 餌やり開始
             param.minSpeed = 3f;
             param.maxSpeed = 7f;
-            param.isPoweful = true;
+            param.isPowerful = true;
             timer_powerful = Time.realtimeSinceStartup;
             isFeeded = false;
             //param.neighborFov = 90f;
@@ -194,7 +199,7 @@ namespace Boid.OOP
             //餌やり終了処理（与えた後一定時間後元気なくなる処理）
             param.minSpeed = 2f;
             param.maxSpeed = 5f;
-            param.isPoweful = false;
+            param.isPowerful = false;
         }
 
         public void SetBoidTargetPos(Vector3 targetPos)

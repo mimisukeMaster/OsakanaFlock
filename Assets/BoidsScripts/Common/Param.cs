@@ -51,7 +51,7 @@ namespace Boid
         [Tooltip("びんびん速度がある期間(flockingと並立)")]
         public float DurationPowerful = 10.0f;
         [Tooltip("びんびん速度があるか")]
-        public bool isPoweful = true;
+        public bool isPowerful = true;
 
         public void Reset()
         {
@@ -77,7 +77,7 @@ namespace Boid
             Duration_flocking = 20.0f;
             DurationPowerful = 10.0f;
             isFlocking = true;
-            isPoweful = true;
+            isPowerful = true;
         }
     }
 }

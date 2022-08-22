@@ -14,6 +14,8 @@ public class ManipulateController : MonoBehaviour
     [SerializeField]
     Boid.OOP.Boid boid;
     [SerializeField]
+    UIManager uiManager;
+    [SerializeField]
     Camera cam;
 
     bool actionReadyFlag;
@@ -25,7 +27,7 @@ public class ManipulateController : MonoBehaviour
     float nonVisibleDistance = 13f;
     float lookTargetDistance = 15f;
     float startTime;
-    float obsSpeed = 100f;
+    float obsSpeed;
     Vector3 spawnPos;
     Vector3 disappearPos;
     Vector3 obsVelocity = Vector3.zero;
@@ -40,6 +42,8 @@ public class ManipulateController : MonoBehaviour
         // 障害物は未だ非表示
         Obstacle.SetActive(false);
 
+        obsSpeed = 5f;  // 3~10
+
     }
 
     // Update is called once per frame
@@ -51,7 +55,7 @@ public class ManipulateController : MonoBehaviour
         // Action可能フラグを立てる 満タンだよ示す処理UI→ UIManager
         if (chargeTime >= chargeTimeMax) actionReadyFlag = true;
 
-        
+
 
 
         // マウスクリックされ続け、Action可能なら
@@ -82,6 +86,9 @@ public class ManipulateController : MonoBehaviour
                     // スタート時間をキャッシュ(Vector3.Lerpで移動するときに使うため)
                     startTime = Time.time;
 
+                    // 命令したことのUI処理
+                    StartCoroutine(uiManager.FlockGestureInvoked());
+
                     // 発動したのでリセット
                     chargeTime = 0;
                     actionReadyFlag = false;
@@ -96,7 +103,10 @@ public class ManipulateController : MonoBehaviour
                     ///  障害物と同じカメラからの距離
                     simulation.SetBoidTargetPos(cam.transform.forward * lookTargetDistance);
                     Debug.DrawLine(cam.transform.position, cam.transform.forward * lookTargetDistance, Color.red);
-                    Debug.Log("point ges");
+
+                    // 命令したことのUI表示の処理
+                    StartCoroutine(uiManager.PowerfulGestureInvoked());
+
                     // 発動したのでリセット
                     chargeTime = 0;
                     actionReadyFlag = false;
