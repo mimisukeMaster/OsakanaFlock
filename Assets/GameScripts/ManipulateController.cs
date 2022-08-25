@@ -12,11 +12,13 @@ public class ManipulateController : MonoBehaviour
     [SerializeField]
     Simulation simulation;
     [SerializeField]
-    Boid.OOP.Boid boid;
+    Boid.Param param;
     [SerializeField]
     UIManager uiManager;
     [SerializeField]
     Camera cam;
+    [SerializeField]
+    public ParticleSystem PowerfulParticle;
 
     bool actionReadyFlag;
     bool isMovingObstacle;
@@ -56,70 +58,90 @@ public class ManipulateController : MonoBehaviour
         if (chargeTime >= chargeTimeMax) actionReadyFlag = true;
 
 
-
-
-        // マウスクリックされ続け、Action可能なら
-        if (Input.GetMouseButton(0) && actionReadyFlag)
+        // クリック中ジェスチャ判定することで待機が再現できる(Finish, Point以外ははじくから)
+        switch (classfication.inferenceResult)
         {
-            // クリック中ジェスチャ判定することで待機が再現できる(Finish, Point以外ははじくから)
-            switch (classfication.inferenceResult)
-            {
 
-                // Obstacle
-                case "Finish":
-                    //ローカル軸に沿った、奥行き・start-end距離のベクトル
-                    Vector3 camVectorForward = cam.transform.forward * lookObsDistance;
-                    Vector3 camVectorRight = cam.transform.right * nonVisibleDistance;
+            // Obstacle
+            case "Finish":
 
-                    // 生成座標
-                    spawnPos = camVectorForward - camVectorRight;
-
-                    // 消える座標
-                    disappearPos = camVectorForward + camVectorRight;
-
-                    // 生成する座標にセット
-                    Obstacle.transform.position = spawnPos;
-
-                    // 移動開始のフラグ立てる →移動開始
-                    isMovingObstacle = true;
-
-                    // スタート時間をキャッシュ(Vector3.Lerpで移動するときに使うため)
-                    startTime = Time.time;
-
-                    // 命令したことのUI処理
-                    StartCoroutine(uiManager.FlockGestureInvoked());
-
-                    // 発動したのでリセット
-                    chargeTime = 0;
-                    actionReadyFlag = false;
+                // マウスクリックされ続け、Action可能なら処理をする
+                if (!Input.GetMouseButton(0) || !actionReadyFlag)
+                {
+                    uiManager.PreInvokeInference();
                     break;
+                }
 
-                // Feed
-                case "Point":
-                    /// 餌やりフラグ立てる → <seealso cref="Simulation.Update()"/>で処理
-                    simulation.isFeeded = true;
+                //ローカル軸に沿った、奥行き・start-end距離のベクトル
+                Vector3 camVectorForward = cam.transform.forward * lookObsDistance;
+                Vector3 camVectorRight = cam.transform.right * nonVisibleDistance;
 
-                    /// Boidsが向かう座標をカメラの中央に設定する → <seealso cref="Simulation.SetBoidTargetPos(Vector3)"/>で処理
-                    ///  障害物と同じカメラからの距離
-                    simulation.SetBoidTargetPos(cam.transform.forward * lookTargetDistance);
-                    Debug.DrawLine(cam.transform.position, cam.transform.forward * lookTargetDistance, Color.red);
+                // 生成座標
+                spawnPos = camVectorForward - camVectorRight;
 
-                    // 命令したことのUI表示の処理
-                    StartCoroutine(uiManager.PowerfulGestureInvoked());
+                // 消える座標
+                disappearPos = camVectorForward + camVectorRight;
 
-                    // 発動したのでリセット
-                    chargeTime = 0;
-                    actionReadyFlag = false;
+                // 生成する座標にセット
+                Obstacle.transform.position = spawnPos;
+
+                // 移動開始のフラグ立てる →移動開始
+                isMovingObstacle = true;
+
+                // スタート時間をキャッシュ(Vector3.Lerpで移動するときに使うため)
+                startTime = Time.time;
+
+                // 命令したことのUI処理
+                StartCoroutine(uiManager.FlockGestureInvoked());
+
+                // 発動したのでリセット
+                chargeTime = 0;
+                actionReadyFlag = false;
+                break;
+
+
+            // Feed
+            case "Point":
+                // マウスクリックされ続け、Action可能なら処理をする
+                if (!Input.GetMouseButton(0) || !actionReadyFlag)
+                {
+                    uiManager.PreInvokeInference();
                     break;
+                }
 
-                // Others
-                default:
-                    break;
+                /// 餌やりフラグ立てる → <seealso cref="Simulation.Update()"/>で処理
+                simulation.isFeeded = true;
 
-            }
+                /// Boidsが向かう座標をカメラの中央に設定する → <seealso cref="Simulation.SetBoidTargetPos(Vector3)"/>で処理
+                ///  障害物と同じカメラからの距離
+                Vector3 targetPos = cam.transform.forward * lookTargetDistance;
+                simulation.SetBoidTargetPos(targetPos);
+
+                Debug.DrawLine(cam.transform.position, cam.transform.forward * lookTargetDistance, Color.red);
+
+                // 集まる座標のところにParticle出してしばらくして消す
+                targetPos.y += 2;
+                ParticleSystem targetPosParticle = Instantiate(PowerfulParticle, targetPos, Quaternion.identity);
+                targetPosParticle.Play();
+                Destroy(targetPosParticle.gameObject, param.DurationPowerful);
+
+                // 命令したことのUI表示の処理
+                StartCoroutine(uiManager.PowerfulGestureInvoked());
+
+                // 発動したのでリセット
+                chargeTime = 0;
+                actionReadyFlag = false;
+                break;
+
+            // Others
+            default:
+                uiManager.PreCantInvokeInferece();
+                break;
+
         }
-        Debug.DrawLine(cam.transform.position, spawnPos, Color.yellow);
-        Debug.DrawLine(cam.transform.position, disappearPos, Color.green);
+
+        // Debug.DrawLine(cam.transform.position, spawnPos, Color.yellow);
+        // Debug.DrawLine(cam.transform.position, disappearPos, Color.green);
 
         // 移動処理
         if (isMovingObstacle)
@@ -132,6 +154,9 @@ public class ManipulateController : MonoBehaviour
 
             // 線形補完で移動
             Obstacle.transform.position = Vector3.Lerp(spawnPos, disappearPos, interpolatedValue * obsSpeed);
+
+            // 進行方向を向ける、-zが前になっているので * -1
+            Obstacle.transform.forward = (disappearPos - spawnPos).normalized * -1;
 
             // 移動終了時
             if (Obstacle.transform.position == disappearPos)

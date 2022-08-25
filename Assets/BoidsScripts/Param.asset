@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Param
   m_EditorClassIdentifier: 
   initSpeed: 2
-  minSpeed: 3
-  maxSpeed: 7
+  minSpeed: 2
+  maxSpeed: 5
   neighborDistance: 2.5
   neighborFov: 120
   separationWeight: 6.5
@@ -31,4 +31,4 @@ MonoBehaviour:
   Duration_flocking: 20
   isFlocking: 1
   DurationPowerful: 10
-  isPoweful: 1
+  isPowerful: 0

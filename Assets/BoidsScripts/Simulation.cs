@@ -15,8 +15,7 @@ namespace Boid.OOP
 
         [SerializeField]
         Param param;
-        [SerializeField]
-        GameManager gameManager;
+        public GameManager gameManager;
 
         List<Boid> boids_ = new List<Boid>();
         public ReadOnlyCollection<Boid> boids
@@ -27,6 +26,7 @@ namespace Boid.OOP
         public Vector3 ColliderSize;
         public int detectedCount = 0;
         public bool isFeeded;
+
 
         float timer_powerful = 0;
         float timer_flocking = 0;
@@ -123,7 +123,6 @@ namespace Boid.OOP
             {
                 SetBoidPowerDown();
                 ResetBoidsMovingToTagetFlag(boids_);
-
             }
 
         }
@@ -175,7 +174,6 @@ namespace Boid.OOP
         }
         void ResetBoidsMovingToTagetFlag(List<Boid> boids)
         {
-            Debug.Log("餌はもうつきた");
             foreach (Boid boid in boids)
             {
                 boid.movingToTaget = false;

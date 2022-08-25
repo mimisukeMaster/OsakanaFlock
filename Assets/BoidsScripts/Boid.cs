@@ -12,16 +12,19 @@ namespace Boid.OOP
         public Vector3 velocity { get; private set; }
         Vector3 accel = Vector3.zero;
         List<Boid> neighbors = new List<Boid>();
-        Vector3 BoundingBox;  // 移動範囲のバウンディングボックス
 
         public bool DetectedObstacle; // 障害物を検知した際のフラグ
         public bool movingToTaget;   //目標の点への移動フラグ
         public Vector3 TargetPos; // 集まる座標
         public MeshRenderer myRenderer; // Boid自身のレンダラ 画面内外判定に使う
+        public ParticleSystem DyingParticle;  // 死にそうならパーティクルだす
+        public ParticleSystem AteParticle;  // 餌を食べたらパーティクルだす
 
+        Vector3 BoundingBox;  // 移動範囲のバウンディングボックス
         float HP;
         float maxHP = 50.0f;
-        float HPRatio = 0.1f;
+        float dyingHP = 30f;
+
         void Start()
         {
 
@@ -31,7 +34,7 @@ namespace Boid.OOP
             BoundingBox = simulation.ColliderSize;
 
             HP = maxHP;
-            myRenderer = GetComponent<MeshRenderer>();
+            myRenderer = GetComponentInChildren<MeshRenderer>();
         }
 
         void Update()
@@ -50,6 +53,9 @@ namespace Boid.OOP
 
             // HPを徐々に減らす
             HP -= Time.deltaTime;
+
+            // HPがdyingHPを切ってゲーム中で死にそうParticleだす
+            if (HP < dyingHP && simulation.gameManager.GameRemainTime > 0) DyingParticle.Play();
 
             // HPが0になったら死ぬ
             if (HP < 0) simulation.RemoveBoid(this);
@@ -213,7 +219,6 @@ namespace Boid.OOP
                 {
                     simulation.detectedCount++;
                     DetectedObstacle = true;
-                    Debug.Log("++");
                 }
 
                 // Wallと違って六面から(反対側,一つの軸に二つよける対象がある)ではないので計算量はXYZ軸一回づつのみで済む
@@ -247,11 +252,14 @@ namespace Boid.OOP
         {
             accel += (targetPos - pos) * param.targetSpeed;
 
-            Debug.DrawLine(pos, targetPos, Color.magenta);
+            // Debug.DrawLine(pos, targetPos, Color.magenta);
             if (Vector3.Distance(targetPos, pos) <= param.proximityThr)
             {
                 // hpアップ処理
                 HP = maxHP;
+
+                // 食べたParticle出す
+                AteParticle.Play();
 
                 // 着いたらMoveToPointやめる
                 Debug.Log("REACHED!");

@@ -3,39 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
+using Boid.OOP;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
-    Image FinishUIPanel;
+    UIManager uiManager;
+
+
     public float GameTime;
     public float GameRemainTime;
-    public bool isGameStarted;
+    public int ResultScore;
+    public bool isGaming;
     public bool BoidsAreAllDead;
 
     // Start is called before the first frame update
     void Start()
     {
+        GameTime = 40f;
+        isGaming = true;                                /// 臨時にここに記す、本当はスタート処理の後
+
         GameRemainTime = GameTime;
-        FinishUIPanel.color = new Color(1, 1, 1, 0);
-        StartCoroutine(GameFinishAnim());
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isGaming) GameRemainTime -= Time.deltaTime;
 
-        if (isGameStarted) GameRemainTime -= Time.deltaTime;
+        // ゲーム終了処理
+        if (isGaming && (GameRemainTime < 0 || BoidsAreAllDead))
+        {
+            // ゲーム中のUIを消す処理
+            uiManager.DisableGameObjects();
 
-        if (GameRemainTime < 0) StartCoroutine(GameFinishAnim());
-
-    }
-    IEnumerator GameFinishAnim()
-    {
-        FinishUIPanel.DOFade(0.6f, 2);
-        yield return new WaitForSeconds(1f);
-
-        ///　ぽん、ポン、ぽｎ　score表示
+            StartCoroutine(uiManager.GameFinishAnim());
+            isGaming = false;
+        }
     }
 }
 

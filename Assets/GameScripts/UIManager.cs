@@ -7,24 +7,33 @@ using Boid.OOP;
 using DG.Tweening;
 using TMPro;
 using TMPro.SpriteAssetUtilities;
+using UnityEngine.SceneManagement;
+using MediaPipe.HandPose;
 
 public class UIManager : MonoBehaviour
 {
-    // gauge
+    [Header("Canvas")]
     [SerializeField]
-    Slider ScoreGauge;
+    RectTransform canvas;
+    [SerializeField]
+    Camera uiCamera;
+
+    [Header("Gauge")]
+    public Slider ScoreGauge;
     [SerializeField]
     Slider ActionGauge;
 
-    // image attach to
+    [Header("image attach to")]
     [SerializeField]
     Sprite ActionGaugeImg;
     [SerializeField]
     Sprite ActionGaugeImg_max;
     [SerializeField]
     RectTransform ActionGaugeImg_info;
+    [SerializeField]
+    Image NormaCursor;
 
-    // gauge images
+    [Header("gauge images")]
     [SerializeField]
     Image ActionGaugeContent;
 
@@ -33,7 +42,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     Image IsPowerfulCursor;
 
-    // flock UI images
+    [Space()]
+    [SerializeField]
+    Text ClassificationResult;
+
+    [Header("flock UI images")]
     [SerializeField]
     Sprite isFlockTrueImg_1;
     [SerializeField]
@@ -45,7 +58,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     ParticleSystem FlockInvokedParticle;
 
-    //powerful UI images
+    [Header("powerful UI images")]
     [SerializeField]
     Sprite isPowerfulTrueImg;
     [SerializeField]
@@ -56,8 +69,25 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     ParticleSystem PowrfulInvokedParticle;
 
+    [Header("Finish後のUI")]
+    [SerializeField]
+    Image FinishUIPanel;
+    [SerializeField]
+    TextMeshProUGUI ScoreText;
+    [SerializeField]
+    ParticleSystem NormaAchievedParticle;
+    [SerializeField]
+    TextMeshProUGUI NormaResultText;
+    [SerializeField]
+    TMP_ColorGradient NormaClearSuccess;
+    [SerializeField]
+    TMP_ColorGradient NormaClearFailed;
+    [SerializeField]
+    Button RestartButton;
+    [SerializeField]
+    Animation SceneRoadTransition;
 
-
+    [Space()]
     [SerializeField]
     Param param;
     [SerializeField]
@@ -65,17 +95,25 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     ManipulateController manipulateController;
     [SerializeField]
+    HandAnimator handAnimator;
+    [SerializeField]
     GameManager gameManager;
+
+
     float score_isFlocking;
     float score_isPowerful;
     float currentTime;
     float maxBoids;
     float NumOfBoids;
+    public float normaScore;
+    float normaProportion;
     Color FlockInfoColor;
     Color PowerfulInfoColor;
+    Color ClassificationResultColor;
 
     bool isFlockTrueAnimation;
     bool isPowerTrueAnimation;
+
 
     // Start is called before the first frame update
     void Start()
@@ -88,6 +126,22 @@ public class UIManager : MonoBehaviour
         PowerfulInfoColor = PowerfulInvokedInfo.color;
         FlockInfoColor = FlockInvokedInfo.color;
         maxBoids = simulation.boidCount;
+
+        // 初期化
+        FinishUIPanel.color = new Color(1, 1, 1, 0);
+        ScoreText.gameObject.SetActive(false);
+        NormaResultText.gameObject.SetActive(false);
+
+        RestartButton.gameObject.SetActive(false);
+
+        // ノルマの設定
+        normaProportion = 0.8f;
+        normaScore = ScoreGauge.maxValue * normaProportion;
+
+        // UISpriteの８割のところにカーソル描画
+        NormaCursor.rectTransform.anchoredPosition = new Vector3(
+            ScoreGauge.GetComponent<RectTransform>().sizeDelta.x * (normaProportion - 0.5f),
+            NormaCursor.rectTransform.anchoredPosition.y, 0);
     }
 
     // Update is called once per frame
@@ -109,7 +163,7 @@ public class UIManager : MonoBehaviour
         ActionGauge.value = manipulateController.chargeTime;
 
         // 満タンならSpriteを変えてアニメーション
-        if (ActionGauge.value == ActionGauge.maxValue) StartCoroutine(ActionGaugeInfoAnim());
+        if (ActionGauge.value == ActionGauge.maxValue && gameManager.GameRemainTime > 0) StartCoroutine(ActionGaugeInfoAnim());
         else
         {
             ActionGaugeContent.sprite = ActionGaugeImg;
@@ -136,7 +190,19 @@ public class UIManager : MonoBehaviour
             }
             else IsPowerfulCursor.sprite = isPowerfulFalseImg;
         }
+
+
     }
+
+    public void PreInvokeInference() => ClassificationResult.text = "";
+
+    public void PreCantInvokeInferece()
+    {
+        ClassificationResult.text = "発動準備完了";
+        ColorUtility.TryParseHtmlString("#ff8a8a", out ClassificationResultColor);
+        ClassificationResult.color = ClassificationResultColor;
+    }
+
 
     IEnumerator isFlockTrueAnim()
     {
@@ -208,5 +274,55 @@ public class UIManager : MonoBehaviour
             PowerfulInvokedInfo.color = PowerfulInfoColor;
             yield return new WaitForEndOfFrame();
         }
+    }
+    public void DisableGameObjects()
+    {
+        var gamingObj = GameObject.FindGameObjectsWithTag("GamingObj");
+        foreach (var obj in gamingObj)
+        {
+            obj.SetActive(false);
+        }
+    }
+
+    /// <seealso cref="GameManager.Update()"/>からゲーム終了後呼ばれる
+    public IEnumerator GameFinishAnim()
+    {
+        FinishUIPanel.DOFade(0.6f, 2);
+        yield return new WaitForSeconds(3f);
+
+        // ノルマスコア達成ならスコアの数字をデコって達成表示
+        ScoreText.canvas.sortingOrder = 2;
+        if (ScoreGauge.value >= normaScore)
+        {
+            ScoreText.gameObject.SetActive(true);
+            ScoreText.text = ScoreGauge.value.ToString("F0");
+            ScoreText.color = Color.yellow;
+            NormaAchievedParticle.Play();
+
+            yield return new WaitForSeconds(1f);
+            NormaResultText.gameObject.SetActive(true);
+            NormaResultText.text = "ノルマクリア!";
+            NormaResultText.colorGradientPreset = NormaClearSuccess;
+
+        }
+        else
+        {
+            ScoreText.gameObject.SetActive(true);
+            ScoreText.text = ScoreGauge.value.ToString("F0");
+
+            yield return new WaitForSeconds(1f);
+            NormaResultText.gameObject.SetActive(true);
+            NormaResultText.text = "ノルマ失敗";
+            NormaResultText.colorGradientPreset = NormaClearFailed;
+        }
+        yield return new WaitForSeconds(1.5f);
+        RestartButton.gameObject.SetActive(true);
+
+    }
+
+    // リスタートボタンでもう一回
+    public void RetryButtonDown()
+    {
+        SceneRoadTransition.Play();
     }
 }
