@@ -1,13 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Boid;
 using Boid.OOP;
 using DG.Tweening;
 using TMPro;
-using TMPro.SpriteAssetUtilities;
-using UnityEngine.SceneManagement;
 using MediaPipe.HandPose;
 
 public class UIManager : MonoBehaviour
@@ -18,10 +15,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     Camera uiCamera;
 
-    [Header("Gauge")]
+    [Header("Gauge/Time")]
     public Slider ScoreGauge;
     [SerializeField]
     Slider ActionGauge;
+    /// RemainTimeTextはゲームの時間管理なので<seealso cref="GameManager.RemainTimeText"/>へ
 
     [Header("image attach to")]
     [SerializeField]
@@ -41,10 +39,6 @@ public class UIManager : MonoBehaviour
     Image IsFlockingCursor;
     [SerializeField]
     Image IsPowerfulCursor;
-
-    [Space()]
-    [SerializeField]
-    Text ClassificationResult;
 
     [Header("flock UI images")]
     [SerializeField]
@@ -115,6 +109,27 @@ public class UIManager : MonoBehaviour
     bool isPowerTrueAnimation;
 
 
+
+    public void Awake()
+    {
+        // 初期化 Startの前に呼ばれる、リロードするとき値が変わっているものを戻す
+        PowerfulInvokedInfo.color = new Color(1, 1, 1, 0);
+        FlockInvokedInfo.color = new Color(1, 1, 1, 0);
+
+        FinishUIPanel.color = new Color(1, 1, 1, 0);
+        FinishUIPanel.gameObject.SetActive(false);
+        ScoreText.gameObject.SetActive(false);
+        NormaResultText.gameObject.SetActive(false);
+
+        RestartButton.gameObject.SetActive(false);
+        SceneRoadTransition.gameObject.SetActive(false);
+
+        ScoreGauge.value = 0;
+        manipulateController.chargeTime = 0;
+        maxBoids = simulation.boidCount;
+
+
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -126,13 +141,6 @@ public class UIManager : MonoBehaviour
         PowerfulInfoColor = PowerfulInvokedInfo.color;
         FlockInfoColor = FlockInvokedInfo.color;
         maxBoids = simulation.boidCount;
-
-        // 初期化
-        FinishUIPanel.color = new Color(1, 1, 1, 0);
-        ScoreText.gameObject.SetActive(false);
-        NormaResultText.gameObject.SetActive(false);
-
-        RestartButton.gameObject.SetActive(false);
 
         // ノルマの設定
         normaProportion = 0.8f;
@@ -151,7 +159,6 @@ public class UIManager : MonoBehaviour
         score_isFlocking = param.isFlocking == true ? 1 : 0.5f;
         score_isPowerful = param.isPowerful == true ? 1 : 0.5f;
         NumOfBoids = simulation.GetNowAliveBoids();
-
         // 現在のスコアを反映 一秒ごとに処理する
         currentTime += Time.deltaTime;
         if (currentTime > 1)
@@ -163,7 +170,10 @@ public class UIManager : MonoBehaviour
         ActionGauge.value = manipulateController.chargeTime;
 
         // 満タンならSpriteを変えてアニメーション
-        if (ActionGauge.value == ActionGauge.maxValue && gameManager.GameRemainTime > 0) StartCoroutine(ActionGaugeInfoAnim());
+        if (ActionGauge.value == ActionGauge.maxValue && gameManager.GameRemainTime > 0)
+        {
+            StartCoroutine(ActionGaugeInfoAnim());
+        }
         else
         {
             ActionGaugeContent.sprite = ActionGaugeImg;
@@ -194,16 +204,6 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void PreInvokeInference() => ClassificationResult.text = "";
-
-    public void PreCantInvokeInferece()
-    {
-        ClassificationResult.text = "発動準備完了";
-        ColorUtility.TryParseHtmlString("#ff8a8a", out ClassificationResultColor);
-        ClassificationResult.color = ClassificationResultColor;
-    }
-
-
     IEnumerator isFlockTrueAnim()
     {
         isFlockTrueAnimation = true;
@@ -221,17 +221,15 @@ public class UIManager : MonoBehaviour
     IEnumerator ActionGaugeInfoAnim()
     {
         ActionGaugeContent.sprite = ActionGaugeImg_max;
-        ActionGaugeImg_info.gameObject.SetActive(true);
-
+        if (gameManager.isGaming) ActionGaugeImg_info.gameObject.SetActive(true);
         while (true)
         {
             ActionGaugeImg_info.DORotate(new Vector3(0, 0, 20), 1, RotateMode.Fast);
             yield return new WaitForSeconds(1.0f);
             ActionGaugeImg_info.DORotate(new Vector3(0, 0, -20), 1, RotateMode.Fast);
             yield return new WaitForSeconds(1.0f);
-            if (ActionGauge.value != ActionGauge.maxValue) break;
+            if (ActionGauge.value != ActionGauge.maxValue || gameManager.isGaming) break;
         }
-
     }
     public IEnumerator FlockGestureInvoked()
     {
@@ -287,6 +285,10 @@ public class UIManager : MonoBehaviour
     /// <seealso cref="GameManager.Update()"/>からゲーム終了後呼ばれる
     public IEnumerator GameFinishAnim()
     {
+        //表示中の場合は消す
+        ActionGaugeImg_info.gameObject.SetActive(false);
+
+        FinishUIPanel.gameObject.SetActive(true);
         FinishUIPanel.DOFade(0.6f, 2);
         yield return new WaitForSeconds(3f);
 
@@ -320,9 +322,16 @@ public class UIManager : MonoBehaviour
 
     }
 
-    // リスタートボタンでもう一回
-    public void RetryButtonDown()
+    // リトライボタンでもう一回
+    public void RetryButtonDown() => StartCoroutine(RetryUIAnim());
+    IEnumerator RetryUIAnim()
     {
+        // 再生中のノルマ達成パーティクルを停止
+        NormaAchievedParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        SceneRoadTransition.gameObject.SetActive(true);
         SceneRoadTransition.Play();
+        yield return new WaitForSeconds(2);
+        gameManager.ReloadScene();
     }
 }

@@ -23,7 +23,7 @@ namespace Boid.OOP
         Vector3 BoundingBox;  // 移動範囲のバウンディングボックス
         float HP;
         float maxHP = 50.0f;
-        float dyingHP = 30f;
+        float dyingHP = 20f;
 
         void Start()
         {
@@ -49,13 +49,12 @@ namespace Boid.OOP
 
             if (movingToTaget) UpdateMoveToPoint(TargetPos);
 
-            //if (Input.GetMouseButtonDown(0)) movingToTaget = true;
-
             // HPを徐々に減らす
             HP -= Time.deltaTime;
 
             // HPがdyingHPを切ってゲーム中で死にそうParticleだす
-            if (HP < dyingHP && simulation.gameManager.GameRemainTime > 0) DyingParticle.Play();
+            if (HP < dyingHP && simulation.gameManager.GameRemainTime > 0) DyingParticle?.Play();
+            if (HP > dyingHP) DyingParticle?.Stop(true);
 
             // HPが0になったら死ぬ
             if (HP < 0) simulation.RemoveBoid(this);

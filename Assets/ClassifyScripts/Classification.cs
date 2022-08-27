@@ -14,8 +14,6 @@ namespace MediaPipe.HandPose
         private IWorker m_worker;
         public string inferenceResult;
 
-        //public RenderTexture targetTexture;
-        public Text targetText;
         [SerializeField] ResourceSet _resources = null;
         HandPipeline _pipelineCla;
         public WebcamInput _webcam = null;

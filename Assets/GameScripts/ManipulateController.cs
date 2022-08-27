@@ -16,9 +16,11 @@ public class ManipulateController : MonoBehaviour
     [SerializeField]
     UIManager uiManager;
     [SerializeField]
+    GameManager gameManager;
+    [SerializeField]
     Camera cam;
     [SerializeField]
-    public ParticleSystem PowerfulParticle;
+    public ParticleSystem PowerfulTargetParticle;
 
     bool actionReadyFlag;
     bool isMovingObstacle;
@@ -32,8 +34,8 @@ public class ManipulateController : MonoBehaviour
     float obsSpeed;
     Vector3 spawnPos;
     Vector3 disappearPos;
-    Vector3 obsVelocity = Vector3.zero;
     GameObject Obstacle;
+    ParticleSystem targetPosParticle;
 
 
     // Start is called before the first frame update
@@ -57,86 +59,77 @@ public class ManipulateController : MonoBehaviour
         // Action可能フラグを立てる 満タンだよ示す処理UI→ UIManager
         if (chargeTime >= chargeTimeMax) actionReadyFlag = true;
 
-
-        // クリック中ジェスチャ判定することで待機が再現できる(Finish, Point以外ははじくから)
-        switch (classfication.inferenceResult)
+        // マウスクリックされ続け、Action可能なら処理をする
+        if (Input.GetMouseButton(0) && actionReadyFlag)
         {
 
-            // Obstacle
-            case "Finish":
+            // クリック中ジェスチャ判定することで待機が再現できる(Finish, Point以外ははじくから)
+            switch (classfication.inferenceResult)
+            {
 
-                // マウスクリックされ続け、Action可能なら処理をする
-                if (!Input.GetMouseButton(0) || !actionReadyFlag)
-                {
-                    uiManager.PreInvokeInference();
+                // Obstacle
+                case "Finish":
+
+                    //ローカル軸に沿った、奥行き・start-end距離のベクトル
+                    Vector3 camVectorForward = cam.transform.forward * lookObsDistance;
+                    Vector3 camVectorRight = cam.transform.right * nonVisibleDistance;
+
+                    // 生成座標
+                    spawnPos = camVectorForward - camVectorRight;
+
+                    // 消える座標
+                    disappearPos = camVectorForward + camVectorRight;
+
+                    // 生成する座標にセット
+                    Obstacle.transform.position = spawnPos;
+
+                    // 移動開始のフラグ立てる →移動開始
+                    isMovingObstacle = true;
+
+                    // スタート時間をキャッシュ(Vector3.Lerpで移動するときに使うため)
+                    startTime = Time.time;
+
+                    // 命令したことのUI処理
+                    StartCoroutine(uiManager.FlockGestureInvoked());
+
+                    // 発動したのでリセット
+                    chargeTime = 0;
+                    actionReadyFlag = false;
                     break;
-                }
-
-                //ローカル軸に沿った、奥行き・start-end距離のベクトル
-                Vector3 camVectorForward = cam.transform.forward * lookObsDistance;
-                Vector3 camVectorRight = cam.transform.right * nonVisibleDistance;
-
-                // 生成座標
-                spawnPos = camVectorForward - camVectorRight;
-
-                // 消える座標
-                disappearPos = camVectorForward + camVectorRight;
-
-                // 生成する座標にセット
-                Obstacle.transform.position = spawnPos;
-
-                // 移動開始のフラグ立てる →移動開始
-                isMovingObstacle = true;
-
-                // スタート時間をキャッシュ(Vector3.Lerpで移動するときに使うため)
-                startTime = Time.time;
-
-                // 命令したことのUI処理
-                StartCoroutine(uiManager.FlockGestureInvoked());
-
-                // 発動したのでリセット
-                chargeTime = 0;
-                actionReadyFlag = false;
-                break;
 
 
-            // Feed
-            case "Point":
-                // マウスクリックされ続け、Action可能なら処理をする
-                if (!Input.GetMouseButton(0) || !actionReadyFlag)
-                {
-                    uiManager.PreInvokeInference();
+                // Feed
+                case "Point":
+
+                    /// 餌やりフラグ立てる → <seealso cref="Simulation.Update()"/>で処理
+                    simulation.isFeeded = true;
+
+                    /// Boidsが向かう座標をカメラの中央に設定する → <seealso cref="Simulation.SetBoidTargetPos(Vector3)"/>で処理
+                    ///  障害物と同じカメラからの距離
+                    Vector3 targetPos = cam.transform.forward * lookTargetDistance;
+                    simulation.SetBoidTargetPos(targetPos);
+
+                    Debug.DrawLine(cam.transform.position, cam.transform.forward * lookTargetDistance, Color.red);
+
+                    // 集まる座標のところにParticle出してしばらくして消す
+                    targetPos.y += 2;
+                    targetPosParticle = Instantiate(PowerfulTargetParticle, targetPos, Quaternion.identity);
+                    targetPosParticle.Play();
+                    Destroy(targetPosParticle.gameObject, param.DurationPowerful);
+                    if (gameManager.GameRemainTime <= 0) Destroy(targetPosParticle.gameObject);
+
+                    // 命令したことのUI表示の処理
+                    StartCoroutine(uiManager.PowerfulGestureInvoked());
+
+                    // 発動したのでリセット
+                    chargeTime = 0;
+                    actionReadyFlag = false;
                     break;
-                }
 
-                /// 餌やりフラグ立てる → <seealso cref="Simulation.Update()"/>で処理
-                simulation.isFeeded = true;
-
-                /// Boidsが向かう座標をカメラの中央に設定する → <seealso cref="Simulation.SetBoidTargetPos(Vector3)"/>で処理
-                ///  障害物と同じカメラからの距離
-                Vector3 targetPos = cam.transform.forward * lookTargetDistance;
-                simulation.SetBoidTargetPos(targetPos);
-
-                Debug.DrawLine(cam.transform.position, cam.transform.forward * lookTargetDistance, Color.red);
-
-                // 集まる座標のところにParticle出してしばらくして消す
-                targetPos.y += 2;
-                ParticleSystem targetPosParticle = Instantiate(PowerfulParticle, targetPos, Quaternion.identity);
-                targetPosParticle.Play();
-                Destroy(targetPosParticle.gameObject, param.DurationPowerful);
-
-                // 命令したことのUI表示の処理
-                StartCoroutine(uiManager.PowerfulGestureInvoked());
-
-                // 発動したのでリセット
-                chargeTime = 0;
-                actionReadyFlag = false;
-                break;
-
-            // Others
-            default:
-                uiManager.PreCantInvokeInferece();
-                break;
+                // Others
+                default:
+                    break;
+            }
 
         }
 
@@ -166,6 +159,13 @@ public class ManipulateController : MonoBehaviour
 
                 Obstacle.SetActive(false);
             }
+
+        }
+        // ゲーム終了していたら餌パーティクル削除・障害物非表示(シーンオブジェクトのため削除×)
+        if (gameManager.GameRemainTime <= 0)
+        {
+            Destroy(PowerfulTargetParticle);
+            Obstacle.SetActive(false);
         }
     }
 }

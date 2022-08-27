@@ -37,7 +37,7 @@ namespace Boid
         public float targetSpeed = 1f;
         [Tooltip("目標の点への移動をやめる距離のしきい値\n遅いほど3ルールが勝り" +
         "目標点に中々到達できないので周りを徘徊する\ntargetSpeedより顕著に現れる")]
-        public float proximityThr = 0.2f;
+        public float proximityThr = 1f;
         [Tooltip("障害物を避け始める残りの障害物との距離")]
         public float avoidDistance = 9.0f;
         [Tooltip("障害物を避けるウエイト、大きいほど忌避")]
@@ -70,7 +70,7 @@ namespace Boid
 
             /// --my param--
             targetSpeed = 1f;
-            proximityThr = 0.2f;
+            proximityThr = 1f;
             avoidDistance = 9.0f;
             avoidWeight = 1.0f;
             detectedObstacleBoids = 15;

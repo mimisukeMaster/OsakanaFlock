@@ -8,7 +8,7 @@ namespace Boid.OOP
     public class Simulation : MonoBehaviour
     {
         [SerializeField]
-        public int boidCount = 450;
+        public int boidCount = 400;
 
         [SerializeField]
         GameObject boidPrefab;
@@ -26,19 +26,19 @@ namespace Boid.OOP
         public Vector3 ColliderSize;
         public int detectedCount = 0;
         public bool isFeeded;
+        public bool isGameStarted;
 
 
         float timer_powerful = 0;
         float timer_flocking = 0;
 
-        void Awake()
+        public void Awake()
         {
             ColliderSize = GetComponent<BoxCollider>().size;
 
             // パラメータをリセット
             param.Reset();
 
-            //timer_disarraged = Time.realtimeSinceStartup;
             timer_powerful = Time.realtimeSinceStartup;
             timer_flocking = Time.realtimeSinceStartup;
         }
@@ -64,19 +64,24 @@ namespace Boid.OOP
         // HP0のBoidを消す
         public void RemoveBoid(Boid rip_boid)
         {
+            // Boid listからも削除
+            boids_.RemoveAt(boids_.IndexOf(rip_boid));
+
+            // 削除した結果、Boid list 空なら
             if (boids_.Count == 0)
             {
                 gameManager.BoidsAreAllDead = true;
+
+                // 残り一匹をどうするか
+                Destroy(rip_boid.gameObject);
+
                 return;
             }
-            // var lastIndex = boids_.Count - 1;
-            // var boid = boids_[lastIndex];
+
 
             // gameObjectを削除
             Destroy(rip_boid.gameObject);
 
-            // Boid listからも削除
-            boids_.RemoveAt(boids_.IndexOf(rip_boid));
         }
         /// 現在のBoidsの数を取得する<seealso cref="UIManager.Update()">で呼び出し
         public int GetNowAliveBoids() => boids_.Count;
@@ -86,10 +91,13 @@ namespace Boid.OOP
 
         void Update()
         {
-            // while (boids_.Count < boidCount)
-            // {
-            //     AddBoid();
-            // }
+            // シーン再ロード時生成する、ゲーム中の死、再ロード前に生成されないようにフラグ
+            //Debug.Log(gameManager.isGaming + "  isgaming  , beforestart " + gameManager.beforeStart);
+            while (boids_.Count < boidCount && isGameStarted)
+            {
+                AddBoid();
+            }
+            isGameStarted = false;
             // while (boids_.Count > boidCount)
             // {
             //     RemoveBoid();
@@ -132,7 +140,6 @@ namespace Boid.OOP
         /// 障害物-------------------------------------------------
         void ResetBoidsDetectedObstacleFlag(List<Boid> boids)
         {
-            Debug.Log("群れさせる");
             foreach (Boid boid in boids)
             {
                 boid.DetectedObstacle = false;
