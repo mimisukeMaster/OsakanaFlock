@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace Boid.OOP
 {
@@ -50,11 +51,19 @@ namespace Boid.OOP
             if (movingToTaget) UpdateMoveToPoint(TargetPos);
 
             // HPを徐々に減らす
-            HP -= Time.deltaTime;
+            if (!simulation.isTitleNow) HP -= Time.deltaTime;
 
-            // HPがdyingHPを切ってゲーム中で死にそうParticleだす
-            if (HP < dyingHP && simulation.gameManager.GameRemainTime > 0) DyingParticle?.Play();
-            if (HP > dyingHP) DyingParticle?.Stop(true);
+            // HPがゲーム中でdyingHPを切ったら死にそうParticleだす
+            if (HP < dyingHP && simulation.gameManager.GameRemainTime > 0)
+            {
+                DyingParticle?.gameObject.SetActive(true);
+                DyingParticle?.Play();
+            }
+            if (HP > dyingHP)
+            {
+                DyingParticle?.Clear();
+                DyingParticle?.gameObject.SetActive(false);
+            }
 
             // HPが0になったら死ぬ
             if (HP < 0) simulation.RemoveBoid(this);

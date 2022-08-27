@@ -94,8 +94,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 255f50ea8a7824702a7283efd810b4d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiManager: {fileID: 0}
-  gameManager: {fileID: 0}
   DetectedObstacle: 0
   movingToTaget: 0
   TargetPos: {x: 0, y: 0, z: 0}
@@ -409,8 +407,24 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 234dc7ebff095244b948288a5886c5da, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -5495902117074765545, guid: e3b05202c004fe3499f8d22f7407b454, type: 3}
+    - target: {fileID: 19900000, guid: 234dc7ebff095244b948288a5886c5da, type: 3}
+      propertyPath: m_SortMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19900000, guid: 234dc7ebff095244b948288a5886c5da, type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19900000, guid: 234dc7ebff095244b948288a5886c5da, type: 3}
       propertyPath: m_MinParticleSize
       value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 19900000, guid: 234dc7ebff095244b948288a5886c5da, type: 3}
+      propertyPath: m_EnableGPUInstancing
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 234dc7ebff095244b948288a5886c5da, type: 3}

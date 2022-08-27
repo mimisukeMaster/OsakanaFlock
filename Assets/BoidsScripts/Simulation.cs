@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UnityEngine.SceneManagement;
 
 namespace Boid.OOP
 {
@@ -26,6 +27,7 @@ namespace Boid.OOP
         public Vector3 ColliderSize;
         public int detectedCount = 0;
         public bool isFeeded;
+        public bool isTitleNow;
         public bool isGameStarted;
 
 
@@ -44,6 +46,8 @@ namespace Boid.OOP
         }
         void Start()
         {
+            ParticleSystem.SetMaximumPreMappedBufferCounts(1, 1);
+
             while (boids_.Count < boidCount)
             {
                 AddBoid();
@@ -92,7 +96,6 @@ namespace Boid.OOP
         void Update()
         {
             // シーン再ロード時生成する、ゲーム中の死、再ロード前に生成されないようにフラグ
-            //Debug.Log(gameManager.isGaming + "  isgaming  , beforestart " + gameManager.beforeStart);
             while (boids_.Count < boidCount && isGameStarted)
             {
                 AddBoid();
@@ -103,9 +106,18 @@ namespace Boid.OOP
             //     RemoveBoid();
             // }
 
+            // タイトルではきれいな姿で泳がせたいのでHP減らさないフラグとずっと綺麗なパラメータ
+            if (SceneManager.GetActiveScene().name == "TitleScene")
+            {
+
+                isTitleNow = true;
+                param.Reset();
+            }
+            else isTitleNow = false;
+
+
+
             // 時間経過によるBoidsの変化
-
-
             // 障害物処理---
             if (detectedCount >= param.detectedObstacleBoids)
             {
