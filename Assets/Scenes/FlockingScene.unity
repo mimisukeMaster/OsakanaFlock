@@ -312,6 +312,7 @@ MonoBehaviour:
   ColliderSize: {x: 0, y: 0, z: 0}
   detectedCount: 0
   isFeeded: 0
+  isTitleNow: 0
   isGameStarted: 0
 --- !u!4 &26877787
 Transform:
@@ -2763,13 +2764,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101798172}
-  m_LocalRotation: {x: 0.14795609, y: 0, z: 0, w: 0.988994}
-  m_LocalPosition: {x: 0, y: 0.3, z: -1.01}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 17.017, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1209897564
 GameObject:
   m_ObjectHideFlags: 0
@@ -3972,7 +3973,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afcdf83d480be7d408de18a208bbb5c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelAsset: {fileID: 5022602860645237092, guid: de0174b3c7cb0fd4c9f52608815502c5, type: 3}
+  modelAsset: {fileID: 5022602860645237092, guid: ee1614cd54bff9c4882f12a5284a872d, type: 3}
   inferenceResult: 
   _resources: {fileID: 11400000, guid: 91bfddd4f6a664d13be4b4a5340a2099, type: 2}
   _webcam: {fileID: 1932201620}

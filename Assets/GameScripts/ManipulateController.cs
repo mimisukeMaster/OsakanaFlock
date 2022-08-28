@@ -64,11 +64,13 @@ public class ManipulateController : MonoBehaviour
         {
 
             // クリック中ジェスチャ判定することで待機が再現できる(Finish, Point以外ははじくから)
+            // ここからよびだすとよびだしにいったときにはもうFeedじゃない辺帝になってしまう時があるので
+            //むこうでFeed出た時のこっちを呼ぶまたはフラグを立てるようにする？
             switch (classfication.inferenceResult)
             {
 
                 // Obstacle
-                case "Finish":
+                case "Swipe":
 
                     //ローカル軸に沿った、奥行き・start-end距離のベクトル
                     Vector3 camVectorForward = cam.transform.forward * lookObsDistance;
@@ -99,7 +101,7 @@ public class ManipulateController : MonoBehaviour
 
 
                 // Feed
-                case "Point":
+                case "Feed":
 
                     /// 餌やりフラグ立てる → <seealso cref="Simulation.Update()"/>で処理
                     simulation.isFeeded = true;

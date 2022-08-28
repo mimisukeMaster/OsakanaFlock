@@ -4,10 +4,12 @@
     {
         var synset = new string[]
         {
-            "Pause",
+            "Swipe",
+            "Feed",
+            "Byebye",
+            "Knock",
             "Crescendo",
-            "Finish",
-            "Point"
+            "Pause"
             /*"Pause",
             "Crescendo",
             "Finish",

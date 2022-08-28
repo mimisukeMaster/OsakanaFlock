@@ -44,12 +44,14 @@ namespace MediaPipe.HandPose
         {
             _pipelineCla.UseAsyncReadback = true;
             _pipelineCla.ProcessImage(_webcam.Texture);
+            //HandAniからもらってこよう
 
 
             //1 List型でXY別々に値入れるList作成,然るべき値代入
             for (int i = 0; i < HandPipeline.KeyPointCount; i++)
             {
-                KeyPointX.Add(_pipelineCla.GetKeyPoint(i).x);
+                // Model推論の左手専用の認識に合わせて左右反転
+                KeyPointX.Add(_pipelineCla.GetKeyPoint(i).x * -1);
                 KeyPointY.Add(_pipelineCla.GetKeyPoint(i).y);
             }
 
@@ -135,6 +137,7 @@ namespace MediaPipe.HandPose
                 }
             }
             inferenceResult = Library.getImageNetSynset()[maxIndex];
+            Debug.Log(inferenceResult);
             //targetText.text = inferenceResult;
             //Debug.Log("推論した結果　" + output);
             output.Dispose();   //各ステップごとにTensorは破棄する必要がある(メモリリーク回避のため)
