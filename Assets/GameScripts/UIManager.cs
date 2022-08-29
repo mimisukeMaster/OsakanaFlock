@@ -15,10 +15,13 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     Camera uiCamera;
 
-    [Header("Gauge/Time")]
+    [Header("Gauge/Info")]
     public Slider ScoreGauge;
     [SerializeField]
     Slider ActionGauge;
+    [SerializeField]
+    Text AliveBoidsText;
+
     /// RemainTimeTextはゲームの時間管理なので<seealso cref="GameManager.RemainTimeText"/>へ
 
     [Header("image attach to")]
@@ -92,13 +95,22 @@ public class UIManager : MonoBehaviour
     HandAnimator handAnimator;
     [SerializeField]
     GameManager gameManager;
-
+    [SerializeField]
+    AudioSource gameAudio;
+    [SerializeField]
+    AudioClip scoreResultSE;
+    [SerializeField]
+    AudioClip normaClearSE;
+    [SerializeField]
+    AudioClip normaFailedSE;
+    [SerializeField]
+    AudioClip retrySE;
 
     float score_isFlocking;
     float score_isPowerful;
     float currentTime;
     float maxBoids;
-    float NumOfBoids;
+    int NumOfBoids;
     public float normaScore;
     float normaProportion;
     Color FlockInfoColor;
@@ -143,13 +155,14 @@ public class UIManager : MonoBehaviour
         maxBoids = simulation.boidCount;
 
         // ノルマの設定
-        normaProportion = 0.8f;
+        normaProportion = 0.1f;
         normaScore = ScoreGauge.maxValue * normaProportion;
 
         // UISpriteの８割のところにカーソル描画
         NormaCursor.rectTransform.anchoredPosition = new Vector3(
             ScoreGauge.GetComponent<RectTransform>().sizeDelta.x * (normaProportion - 0.5f),
             NormaCursor.rectTransform.anchoredPosition.y, 0);
+        NormaCursor.GetComponentInChildren<Text>().text = normaProportion * 100 + "点";
     }
 
     // Update is called once per frame
@@ -159,6 +172,7 @@ public class UIManager : MonoBehaviour
         score_isFlocking = param.isFlocking == true ? 1 : 0.5f;
         score_isPowerful = param.isPowerful == true ? 1 : 0.5f;
         NumOfBoids = simulation.GetNowAliveBoids();
+
         // 現在のスコアを反映 一秒ごとに処理する
         currentTime += Time.deltaTime;
         if (currentTime > 1)
@@ -166,8 +180,14 @@ public class UIManager : MonoBehaviour
             ScoreGauge.value += score_isFlocking * score_isPowerful * (NumOfBoids / maxBoids);
             currentTime = 0;
         }
-        // 命令ゲージ計算
+        // 命令ゲージUI計算
         ActionGauge.value = manipulateController.chargeTime;
+
+        // 残りBoid数も表示
+        AliveBoidsText.text = "お魚:" + NumOfBoids + "匹";
+        if (NumOfBoids < 100) AliveBoidsText.color = Color.red;
+        else if (AliveBoidsText.color == Color.red) AliveBoidsText.color = Color.white;
+
 
         // 満タンならSpriteを変えてアニメーション
         if (ActionGauge.value == ActionGauge.maxValue && gameManager.GameRemainTime > 0)
@@ -290,32 +310,39 @@ public class UIManager : MonoBehaviour
 
         FinishUIPanel.gameObject.SetActive(true);
         FinishUIPanel.DOFade(0.6f, 2);
-        yield return new WaitForSeconds(3f);
+
+        yield return new WaitForSeconds(2f);
 
         // ノルマスコア達成ならスコアの数字をデコって達成表示
         ScoreText.canvas.sortingOrder = 2;
+
         if (ScoreGauge.value >= normaScore)
         {
             ScoreText.gameObject.SetActive(true);
             ScoreText.text = ScoreGauge.value.ToString("F0");
             ScoreText.color = Color.yellow;
             NormaAchievedParticle.Play();
+            gameAudio.PlayOneShot(scoreResultSE);
 
             yield return new WaitForSeconds(1f);
             NormaResultText.gameObject.SetActive(true);
             NormaResultText.text = "ノルマクリア!";
             NormaResultText.colorGradientPreset = NormaClearSuccess;
+            gameAudio.PlayOneShot(normaClearSE);
 
         }
         else
         {
             ScoreText.gameObject.SetActive(true);
             ScoreText.text = ScoreGauge.value.ToString("F0");
+            ScoreText.color = Color.white;
+            gameAudio.PlayOneShot(scoreResultSE);
 
             yield return new WaitForSeconds(1f);
             NormaResultText.gameObject.SetActive(true);
             NormaResultText.text = "ノルマ失敗";
             NormaResultText.colorGradientPreset = NormaClearFailed;
+            gameAudio.PlayOneShot(normaFailedSE);
         }
         yield return new WaitForSeconds(1.5f);
         RestartButton.gameObject.SetActive(true);
@@ -326,6 +353,7 @@ public class UIManager : MonoBehaviour
     public void RetryButtonDown() => StartCoroutine(RetryUIAnim());
     IEnumerator RetryUIAnim()
     {
+        gameAudio.PlayOneShot(retrySE);
         // 再生中のノルマ達成パーティクルを停止
         NormaAchievedParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 

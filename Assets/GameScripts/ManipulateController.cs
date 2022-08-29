@@ -20,6 +20,11 @@ public class ManipulateController : MonoBehaviour
     [SerializeField]
     Camera cam;
     [SerializeField]
+    AudioSource gameAudio;
+    [SerializeField]
+    AudioClip SwipeSE;
+    [SerializeField]
+    AudioClip FeedSE;
     public ParticleSystem PowerfulTargetParticle;
 
     bool actionReadyFlag;
@@ -94,6 +99,9 @@ public class ManipulateController : MonoBehaviour
                     // 命令したことのUI処理
                     StartCoroutine(uiManager.FlockGestureInvoked());
 
+                    // SE
+                    gameAudio.PlayOneShot(SwipeSE);
+
                     // 発動したのでリセット
                     chargeTime = 0;
                     actionReadyFlag = false;
@@ -123,6 +131,10 @@ public class ManipulateController : MonoBehaviour
                     // 命令したことのUI表示の処理
                     StartCoroutine(uiManager.PowerfulGestureInvoked());
 
+                    // SE
+                    gameAudio.PlayOneShot(FeedSE);
+
+
                     // 発動したのでリセット
                     chargeTime = 0;
                     actionReadyFlag = false;
@@ -142,7 +154,7 @@ public class ManipulateController : MonoBehaviour
         if (isMovingObstacle)
         {
             // 具現化
-            Obstacle.SetActive(true);
+            if (!Obstacle.gameObject.activeInHierarchy) Obstacle.SetActive(true);
 
             //現在フレームの補間値を計算
             float interpolatedValue = (Time.time - startTime) / Vector3.Distance(spawnPos, disappearPos);
@@ -163,11 +175,11 @@ public class ManipulateController : MonoBehaviour
             }
 
         }
-        // ゲーム終了していたら餌パーティクル削除・障害物非表示(シーンオブジェクトのため削除×)
-        if (gameManager.GameRemainTime <= 0)
+
+        // ゲーム終了していたらこのManipulaterも非アクティブになる　餌パーティクル削除・障害物非表示(シーンオブジェクトのため削除×)
+        if (!gameManager.isGaming)
         {
             Destroy(PowerfulTargetParticle);
-            Obstacle.SetActive(false);
         }
     }
 }

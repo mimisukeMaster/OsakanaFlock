@@ -39,6 +39,12 @@ public class StartInstruction : MonoBehaviour
     GameManager gameManager;
     [SerializeField]
     Simulation simulation;
+    [SerializeField]
+    AudioSource gameAudio;
+    [SerializeField]
+    AudioClip showSlideSE;
+    [SerializeField]
+    AudioClip nextSlideSE;
 
     Image instructionImg;
     bool showSlide;
@@ -71,6 +77,7 @@ public class StartInstruction : MonoBehaviour
             }
         }
 
+        Camera.main.transform.rotation = Quaternion.Euler(0, 0, 0);
 
     }
 
@@ -85,21 +92,27 @@ public class StartInstruction : MonoBehaviour
                 // 1の時はYesボタンクリック時に見せる
                 case 2:
                     instructionImg.sprite = Opening_02;
+                    gameAudio.PlayOneShot(nextSlideSE);
                     break;
                 case 3:
                     instructionImg.sprite = Opening_03;
+                    gameAudio.PlayOneShot(nextSlideSE);
                     break;
                 case 4:
                     instructionImg.sprite = Opening_04;
+                    gameAudio.PlayOneShot(nextSlideSE);
                     break;
                 case 5:
                     instructionImg.sprite = Opening_05;
+                    gameAudio.PlayOneShot(nextSlideSE);
                     break;
                 case 6:
                     instructionImg.sprite = Opening_06;
+                    gameAudio.PlayOneShot(nextSlideSE);
                     break;
                 case 7:
                     instructionImg.sprite = Opening_07;
+                    gameAudio.PlayOneShot(nextSlideSE);
                     NextPageInfoText.gameObject.SetActive(false);
                     GameStartButton.gameObject.SetActive(true);
                     showSlide = false;
@@ -114,6 +127,7 @@ public class StartInstruction : MonoBehaviour
         instructionImg.color = Color.white;
         instructionImg.sprite = Opening_01;
         slideCount++;
+        gameAudio.PlayOneShot(showSlideSE);
         NextPageInfoText.gameObject.SetActive(true);
 
         AskText.gameObject.SetActive(false);

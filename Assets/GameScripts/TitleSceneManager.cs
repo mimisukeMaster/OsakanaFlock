@@ -9,6 +9,11 @@ public class TitleSceneManager : MonoBehaviour
 {
     [SerializeField]
     TextMeshProUGUI nextText;
+    [SerializeField]
+    AudioSource titleAudio;
+    [SerializeField]
+    AudioClip ClickSE;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,8 +26,11 @@ public class TitleSceneManager : MonoBehaviour
         if (nextText.alpha >= 0.95f) nextText.DOFade(0, 1.5f);
         if (nextText.alpha <= 0.05f) nextText.DOFade(1, 1.5f);
 
-        if (Input.GetMouseButtonDown(0)) SceneManager.LoadScene("FlockingScene");
-
-
+        if (Input.GetMouseButtonDown(0))
+        {
+            nextText.text = "ロード中…";
+            titleAudio.PlayOneShot(ClickSE);
+            SceneManager.LoadScene("FlockingScene");
+        }
     }
 }

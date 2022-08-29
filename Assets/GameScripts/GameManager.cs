@@ -18,6 +18,18 @@ public class GameManager : MonoBehaviour
     Simulation simulation;
     [SerializeField]
     Text RemainTimeText;
+    [SerializeField]
+    AudioClip StartInstructionBGM;
+    [SerializeField]
+    AudioSource gameAudio;
+    [SerializeField]
+    AudioClip GameBGM;
+    [SerializeField]
+    AudioClip ScoreBGM;
+    [SerializeField]
+    AudioClip gameStartSE;
+    [SerializeField]
+    AudioClip gameFinishSE;
 
     public float GameTime = 100;
     public float GameRemainTime;
@@ -26,12 +38,14 @@ public class GameManager : MonoBehaviour
     public bool BoidsAreAllDead;
     public bool beforeStart;
 
+    public bool firstStart;
     // Start is called before the first frame update
     void Start()
     {
         GameTime = 100f;
         GameRemainTime = GameTime;
         beforeStart = true;
+        firstStart = true;
     }
 
     // Update is called once per frame
@@ -39,13 +53,29 @@ public class GameManager : MonoBehaviour
     {
         if (isGaming)
         {
-            // ゲーム中
+            // ゲーム開始
             beforeStart = false;
+
+            // 開始SE
+            if (firstStart)
+            {
+                gameAudio.PlayOneShot(gameStartSE);
+                firstStart = false;
+            }
+            // 残り時間減らしていく
             GameRemainTime -= Time.deltaTime;
             RemainTimeText.text = "残り時間\n" + GameRemainTime.ToString("F1") + "秒";
 
+            // 非アクティブだったものをアクティブ化
             simulation?.gameObject.SetActive(true);
             manipulateController.gameObject.SetActive(true);
+
+            // ゲーム中BGM処理
+            if (gameAudio.clip != GameBGM)
+            {
+                gameAudio.clip = GameBGM;
+                gameAudio.Play();
+            }
 
             // ゲーム終了処理
             if (GameRemainTime < 0 || BoidsAreAllDead)
@@ -59,6 +89,20 @@ public class GameManager : MonoBehaviour
                 // ゲーム中のUIを消す処理
                 uiManager.DisableGameObjects();
 
+                // 開始SEのフラグ下げる
+                firstStart = false;
+
+                // 終了SE
+                gameAudio.PlayOneShot(gameFinishSE);
+
+                //スコア画面BGM処理
+                if (gameAudio.clip != ScoreBGM)
+                {
+                    gameAudio.clip = ScoreBGM;
+                    gameAudio.Play();
+                }
+
+                // スコア表示UI処理
                 StartCoroutine(uiManager.GameFinishAnim());
 
                 isGaming = false;
@@ -71,6 +115,13 @@ public class GameManager : MonoBehaviour
             // Simulationはゲーム終了後も動いてほしいので非アクティブはゲーム開始前のみにする
             if (beforeStart) simulation.gameObject.SetActive(false);
             manipulateController.gameObject.SetActive(false);
+        }
+
+        // ゲーム前のルール見ますかの時からStartボタン押すまでの間
+        if (beforeStart && gameAudio.clip != StartInstructionBGM)
+        {
+            gameAudio.clip = StartInstructionBGM;
+            gameAudio.Play();
         }
     }
     public void ReloadScene()
@@ -87,6 +138,12 @@ public class GameManager : MonoBehaviour
         }
         // Boidが全部消えてもReloadのときはフラグを立てない(スタート後すぐに終わってしまう)
         BoidsAreAllDead = false;
+
+        // 障害物があったら消す
+        simulation.Obstacles[0].gameObject?.SetActive(false);
+
+        // 餌パーティクルが残ってたら消す
+        manipulateController.PowerfulTargetParticle.gameObject?.SetActive(false);
 
         // 進行中のコルーチンの停止
         StopAllCoroutines();

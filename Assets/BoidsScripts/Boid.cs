@@ -270,7 +270,6 @@ namespace Boid.OOP
                 AteParticle.Play();
 
                 // 着いたらMoveToPointやめる
-                Debug.Log("REACHED!");
                 movingToTaget = false;
             }
         }

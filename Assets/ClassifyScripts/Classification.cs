@@ -137,7 +137,6 @@ namespace MediaPipe.HandPose
                 }
             }
             inferenceResult = Library.getImageNetSynset()[maxIndex];
-            Debug.Log(inferenceResult);
             //targetText.text = inferenceResult;
             //Debug.Log("推論した結果　" + output);
             output.Dispose();   //各ステップごとにTensorは破棄する必要がある(メモリリーク回避のため)
