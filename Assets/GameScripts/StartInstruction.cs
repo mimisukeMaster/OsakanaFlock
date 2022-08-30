@@ -140,14 +140,7 @@ public class StartInstruction : MonoBehaviour
         /// このフラグで<seealso cref="ManipulateController"</>経由でSimulationがアクティブになる
         gameManager.isGaming = true;
         simulation.isGameStarted = true;
-
-        // instruction UI 非アクティブ
-        instructionImg.gameObject.SetActive(false); // 自身
-        AskText.gameObject.SetActive(false);
-        showSlideYes.gameObject.SetActive(false);
-        showSlideNo.gameObject.SetActive(false);
-        GameStartButton.gameObject.SetActive(false);
-
+        simulation.isFirstGameFrame = true;
 
         // Game Obj アクティブ
         foreach (GameObject obj in HideObjs)
@@ -155,6 +148,16 @@ public class StartInstruction : MonoBehaviour
             obj.SetActive(true);
         }
 
+        // ジェスチャーシグナルのタイマーセット
+        simulation.timer_powerful = Time.realtimeSinceStartup;
+        simulation.timer_flocking = Time.realtimeSinceStartup;
+
+        // instruction UI 非アクティブ
+        AskText.gameObject.SetActive(false);
+        showSlideYes.gameObject.SetActive(false);
+        showSlideNo.gameObject.SetActive(false);
+        GameStartButton.gameObject.SetActive(false);
+        instructionImg.gameObject.SetActive(false); // 自身
     }
 
 }

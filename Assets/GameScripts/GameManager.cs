@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using Boid.OOP;
+using Boid;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class GameManager : MonoBehaviour
     ManipulateController manipulateController;
     [SerializeField]
     Simulation simulation;
+    [SerializeField]
+    Param param;
     [SerializeField]
     Text RemainTimeText;
     [SerializeField]
@@ -37,8 +40,16 @@ public class GameManager : MonoBehaviour
     public bool isGaming; /// 初めてTrueになるのは<seealso cref="StartInstruction.GameStartButtonDown()"</>
     public bool BoidsAreAllDead;
     public bool beforeStart;
-
     public bool firstStart;
+
+    public GameObject[] gamingObj;
+
+
+    void Awake()
+    {
+        // 非アクティブにする前にGamingObjタグ付きのものを配列化
+        gamingObj = GameObject.FindGameObjectsWithTag("GamingObj");
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -86,8 +97,12 @@ public class GameManager : MonoBehaviour
                 // deltatimeのござを埋めるため綺麗に0を入れておく
                 GameRemainTime = 0;
 
-                // ゲーム中のUIを消す処理
-                uiManager.DisableGameObjects();
+                // ゲーム中のObjectを消す処理
+                var gamingObj = GameObject.FindGameObjectsWithTag("GamingObj");
+                foreach (var obj in gamingObj)
+                {
+                    obj.SetActive(false);
+                }
 
                 // 開始SEのフラグ下げる
                 firstStart = false;
@@ -139,11 +154,17 @@ public class GameManager : MonoBehaviour
         // Boidが全部消えてもReloadのときはフラグを立てない(スタート後すぐに終わってしまう)
         BoidsAreAllDead = false;
 
-        // 障害物があったら消す
-        simulation.Obstacles[0].gameObject?.SetActive(false);
-
-        // 餌パーティクルが残ってたら消す
-        manipulateController.PowerfulTargetParticle.gameObject?.SetActive(false);
+        try
+        {
+            // 障害物があったら消す
+            simulation.Obstacles[0].gameObject?.SetActive(false);
+            // 餌パーティクルが残ってたら消す
+            manipulateController.TargetPosParticleInstantiated.gameObject.SetActive(false);
+        }
+        catch (System.Exception)
+        {
+            Debug.Log("E");
+        }
 
         // 進行中のコルーチンの停止
         StopAllCoroutines();
@@ -152,7 +173,7 @@ public class GameManager : MonoBehaviour
         uiManager.Awake();
 
         // simulation paramの初期化
-        simulation.Awake();
+        param.Reset();
 
         // GameTimeの初期化処理とフラグ
         Start();

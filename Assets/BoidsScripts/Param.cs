@@ -45,7 +45,7 @@ namespace Boid
         [Tooltip("障害物を検知したBoidの数")]
         public int detectedObstacleBoids = 15;
         [Tooltip("群れてる期間(purfulと並立)")]
-        public float Duration_flocking = 20.0f;
+        public float DurationFlocking = 20.0f;
         [Tooltip("群れているか")]
         public bool isFlocking = true;
         [Tooltip("びんびん速度がある期間(flockingと並立)")]
@@ -74,7 +74,7 @@ namespace Boid
             avoidDistance = 9.0f;
             avoidWeight = 1.0f;
             detectedObstacleBoids = 15;
-            Duration_flocking = 20.0f;
+            DurationFlocking = 20.0f;
             DurationPowerful = 10.0f;
             isFlocking = true;
             isPowerful = true;

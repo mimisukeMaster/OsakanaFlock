@@ -17,7 +17,6 @@ namespace Boid.OOP
         public bool DetectedObstacle; // 障害物を検知した際のフラグ
         public bool movingToTaget;   //目標の点への移動フラグ
         public Vector3 TargetPos; // 集まる座標
-        public MeshRenderer myRenderer; // Boid自身のレンダラ 画面内外判定に使う
         public ParticleSystem DyingParticle;  // 死にそうならパーティクルだす
         public ParticleSystem AteParticle;  // 餌を食べたらパーティクルだす
 
@@ -35,7 +34,6 @@ namespace Boid.OOP
             BoundingBox = simulation.ColliderSize;
 
             HP = maxHP;
-            myRenderer = GetComponentInChildren<MeshRenderer>();
         }
 
         void Update()

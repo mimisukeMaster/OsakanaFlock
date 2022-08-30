@@ -25,6 +25,8 @@ public class ManipulateController : MonoBehaviour
     AudioClip SwipeSE;
     [SerializeField]
     AudioClip FeedSE;
+    [HideInInspector]
+    public ParticleSystem TargetPosParticleInstantiated;
     public ParticleSystem PowerfulTargetParticle;
 
     bool actionReadyFlag;
@@ -40,7 +42,6 @@ public class ManipulateController : MonoBehaviour
     Vector3 spawnPos;
     Vector3 disappearPos;
     GameObject Obstacle;
-    ParticleSystem targetPosParticle;
 
 
     // Start is called before the first frame update
@@ -123,17 +124,16 @@ public class ManipulateController : MonoBehaviour
 
                     // 集まる座標のところにParticle出してしばらくして消す
                     targetPos.y += 2;
-                    targetPosParticle = Instantiate(PowerfulTargetParticle, targetPos, Quaternion.identity);
-                    targetPosParticle.Play();
-                    Destroy(targetPosParticle.gameObject, param.DurationPowerful);
-                    if (gameManager.GameRemainTime <= 0) Destroy(targetPosParticle.gameObject);
+                    TargetPosParticleInstantiated = Instantiate(PowerfulTargetParticle, targetPos, Quaternion.identity);
+                    TargetPosParticleInstantiated.Play();
+                    Destroy(TargetPosParticleInstantiated.gameObject, param.DurationPowerful);
+                    if (!gameManager.isGaming) Destroy(TargetPosParticleInstantiated.gameObject);
 
                     // 命令したことのUI表示の処理
                     StartCoroutine(uiManager.PowerfulGestureInvoked());
 
                     // SE
                     gameAudio.PlayOneShot(FeedSE);
-
 
                     // 発動したのでリセット
                     chargeTime = 0;
@@ -146,9 +146,6 @@ public class ManipulateController : MonoBehaviour
             }
 
         }
-
-        // Debug.DrawLine(cam.transform.position, spawnPos, Color.yellow);
-        // Debug.DrawLine(cam.transform.position, disappearPos, Color.green);
 
         // 移動処理
         if (isMovingObstacle)

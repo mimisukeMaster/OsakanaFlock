@@ -18,7 +18,7 @@ namespace Boid.OOP
         Param param;
         public GameManager gameManager;
 
-        List<Boid> boids_ = new List<Boid>();
+        public List<Boid> boids_ = new List<Boid>();
         public ReadOnlyCollection<Boid> boids
         {
             get { return boids_.AsReadOnly(); }
@@ -28,24 +28,16 @@ namespace Boid.OOP
         public int detectedCount = 0;
         public bool isFeeded;
         public bool isTitleNow;
+        public bool isFirstGameFrame;
         public bool isGameStarted;
+        public float timer_powerful = 0;
+        public float timer_flocking = 0;
 
-
-        float timer_powerful = 0;
-        float timer_flocking = 0;
-
-        public void Awake()
-        {
-            ColliderSize = GetComponent<BoxCollider>().size;
-
-            // パラメータをリセット
-            param.Reset();
-
-            timer_powerful = Time.realtimeSinceStartup;
-            timer_flocking = Time.realtimeSinceStartup;
-        }
         void Start()
         {
+            ColliderSize = GetComponent<BoxCollider>().size;
+            param.Reset();
+
             ParticleSystem.SetMaximumPreMappedBufferCounts(1, 1);
 
             while (boids_.Count < boidCount)
@@ -68,6 +60,20 @@ namespace Boid.OOP
         // HP0のBoidを消す
         public void RemoveBoid(Boid rip_boid)
         {
+            // main camera を含んでいる場合はCameraを次のインデックスのBoidに移ってもらう
+            if (rip_boid.transform.childCount == 5)
+            {
+                try
+                {
+                    Camera.main.transform.SetParent(boids_[boids_.IndexOf(rip_boid) + 1].transform);
+                }
+                catch (System.ArgumentException)
+                {
+                    Camera.main.transform.parent = null;
+                    Camera.main.transform.position = Vector3.zero;
+                    Camera.main.transform.eulerAngles = Vector3.zero;
+                }
+            }
             // Boid listからも削除
             boids_.RemoveAt(boids_.IndexOf(rip_boid));
 
@@ -87,9 +93,6 @@ namespace Boid.OOP
             Destroy(rip_boid.gameObject);
 
         }
-        /// 現在のBoidsの数を取得する<seealso cref="UIManager.Update()">で呼び出し
-        public int GetNowAliveBoids() => boids_.Count;
-
         #endregion 
 
 
@@ -101,20 +104,22 @@ namespace Boid.OOP
                 AddBoid();
             }
             isGameStarted = false;
-            // while (boids_.Count > boidCount)
-            // {
-            //     RemoveBoid();
-            // }
 
-            // タイトルではきれいな姿で泳がせたいのでHP減らさないフラグとずっと綺麗なパラメータ
+            // タイトルではきれいな姿で泳がせたいのでReset()、HP維持フラグ、タイマー更新
             if (SceneManager.GetActiveScene().name == "TitleScene")
             {
-
                 isTitleNow = true;
+                isFirstGameFrame = true;
                 param.Reset();
             }
-            else isTitleNow = false;
-
+            // ゲーム始まって最初のフレームで入る
+            else if (isFirstGameFrame && gameManager.isGaming)
+            {
+                //スタート直後のparam.Reset() はい　いいえの選択時間減った場合の値のリカバー
+                param.Reset();
+                isFirstGameFrame = false;
+                isTitleNow = false;
+            }
 
 
             // 時間経過によるBoidsの変化
@@ -125,7 +130,7 @@ namespace Boid.OOP
                 ResetBoidsDetectedObstacleFlag(boids_);
             }
             // 一定時間むれたあと
-            if (Time.realtimeSinceStartup - timer_flocking > param.Duration_flocking && param.isFlocking)
+            if (Time.realtimeSinceStartup - timer_flocking > param.DurationFlocking && param.isFlocking)
             {
                 SetDeFlocking();
                 ResetBoidsDetectedObstacleFlag(boids_);
@@ -184,11 +189,7 @@ namespace Boid.OOP
         {
             foreach (Boid boid in boids)
             {
-                // 現在見えていない(レンダリングされていない)ならそのBoidのFlagは上げない
-                //if (!boid.myRenderer.isVisible) continue;
-
                 boid.movingToTaget = true;
-                Debug.Log("俺指名された餌食える");
             }
         }
         void ResetBoidsMovingToTagetFlag(List<Boid> boids)
@@ -206,9 +207,6 @@ namespace Boid.OOP
             param.isPowerful = true;
             timer_powerful = Time.realtimeSinceStartup;
             isFeeded = false;
-            //param.neighborFov = 90f;
-            //param.isFlocking = true;
-            //timer_flocking = Time.realtimeSinceStartup;
 
         }
         void SetBoidPowerDown()

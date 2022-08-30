@@ -21,6 +21,8 @@ public class UIManager : MonoBehaviour
     Slider ActionGauge;
     [SerializeField]
     Text AliveBoidsText;
+    [SerializeField]
+    Button BoidViewBack;
 
     /// RemainTimeTextはゲームの時間管理なので<seealso cref="GameManager.RemainTimeText"/>へ
 
@@ -119,6 +121,7 @@ public class UIManager : MonoBehaviour
 
     bool isFlockTrueAnimation;
     bool isPowerTrueAnimation;
+    bool boidViewMode;
 
 
 
@@ -127,6 +130,8 @@ public class UIManager : MonoBehaviour
         // 初期化 Startの前に呼ばれる、リロードするとき値が変わっているものを戻す
         PowerfulInvokedInfo.color = new Color(1, 1, 1, 0);
         FlockInvokedInfo.color = new Color(1, 1, 1, 0);
+
+        BoidViewBack.gameObject.SetActive(false);
 
         FinishUIPanel.color = new Color(1, 1, 1, 0);
         FinishUIPanel.gameObject.SetActive(false);
@@ -155,7 +160,7 @@ public class UIManager : MonoBehaviour
         maxBoids = simulation.boidCount;
 
         // ノルマの設定
-        normaProportion = 0.1f;
+        normaProportion = 0.7f;
         normaScore = ScoreGauge.maxValue * normaProportion;
 
         // UISpriteの８割のところにカーソル描画
@@ -171,11 +176,11 @@ public class UIManager : MonoBehaviour
         // スコア計算　他の処理が入ったらCaculateScore()つくる
         score_isFlocking = param.isFlocking == true ? 1 : 0.5f;
         score_isPowerful = param.isPowerful == true ? 1 : 0.5f;
-        NumOfBoids = simulation.GetNowAliveBoids();
+        NumOfBoids = simulation.boids_.Count;
 
         // 現在のスコアを反映 一秒ごとに処理する
         currentTime += Time.deltaTime;
-        if (currentTime > 1)
+        if (currentTime > 1 && gameManager.isGaming)
         {
             ScoreGauge.value += score_isFlocking * score_isPowerful * (NumOfBoids / maxBoids);
             currentTime = 0;
@@ -190,7 +195,7 @@ public class UIManager : MonoBehaviour
 
 
         // 満タンならSpriteを変えてアニメーション
-        if (ActionGauge.value == ActionGauge.maxValue && gameManager.GameRemainTime > 0)
+        if (ActionGauge.value == ActionGauge.maxValue && gameManager.isGaming)
         {
             StartCoroutine(ActionGaugeInfoAnim());
         }
@@ -204,20 +209,14 @@ public class UIManager : MonoBehaviour
         if (!isFlockTrueAnimation)
         {
             // isFlocking中なら
-            if (score_isFlocking == 1 && !isFlockTrueAnimation)
-            {
-                StartCoroutine(isFlockTrueAnim());
-            }
+            if (score_isFlocking == 1) StartCoroutine(isFlockTrueAnim());
             else IsFlockingCursor.sprite = isFlockFalseImg;
         }
 
         if (!isPowerTrueAnimation)
         {
             // isPowerful中なら
-            if (score_isPowerful == 1)
-            {
-                StartCoroutine(isPowerfulTrueAnim());
-            }
+            if (score_isPowerful == 1) StartCoroutine(isPowerfulTrueAnim());
             else IsPowerfulCursor.sprite = isPowerfulFalseImg;
         }
 
@@ -235,13 +234,15 @@ public class UIManager : MonoBehaviour
     }
     IEnumerator isPowerfulTrueAnim()
     {
+        isPowerTrueAnimation = true;
         IsPowerfulCursor.sprite = isPowerfulTrueImg;
         yield return new WaitForSeconds(Time.deltaTime);
+        isPowerTrueAnimation = false;
     }
     IEnumerator ActionGaugeInfoAnim()
     {
         ActionGaugeContent.sprite = ActionGaugeImg_max;
-        if (gameManager.isGaming) ActionGaugeImg_info.gameObject.SetActive(true);
+        if (!ActionGaugeImg_info.gameObject.activeInHierarchy && !boidViewMode) ActionGaugeImg_info.gameObject.SetActive(true);
         while (true)
         {
             ActionGaugeImg_info.DORotate(new Vector3(0, 0, 20), 1, RotateMode.Fast);
@@ -293,16 +294,9 @@ public class UIManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
     }
-    public void DisableGameObjects()
-    {
-        var gamingObj = GameObject.FindGameObjectsWithTag("GamingObj");
-        foreach (var obj in gamingObj)
-        {
-            obj.SetActive(false);
-        }
-    }
-
+    /// <summary>
     /// <seealso cref="GameManager.Update()"/>からゲーム終了後呼ばれる
+    /// </summary>
     public IEnumerator GameFinishAnim()
     {
         //表示中の場合は消す
@@ -348,6 +342,38 @@ public class UIManager : MonoBehaviour
         RestartButton.gameObject.SetActive(true);
 
     }
+
+    // おさかなビューボタンで鑑賞モード
+    public void BoidViewButtonDown()
+    {
+        if (simulation.boids_.Count == 0) return;
+        boidViewMode = true;
+        Camera.main.transform.position = simulation.boids_[0].transform.position;
+        Camera.main.transform.SetParent(simulation.boids_[0].transform);
+        Camera.main.transform.localEulerAngles = Vector3.zero;
+
+        Debug.Log(gameManager.gamingObj.Length);
+        foreach (var obj in gameManager.gamingObj)
+        {
+            obj.SetActive(false);
+        }
+        BoidViewBack.gameObject.SetActive(true);
+    }
+    public void BoidViewButtonBackDown()
+    {
+        boidViewMode = false;
+        Camera.main.transform.parent = null;
+        Camera.main.transform.position = Vector3.zero;
+        Camera.main.transform.eulerAngles = Vector3.zero;
+
+        foreach (var obj in gameManager.gamingObj)
+        {
+            obj.SetActive(true);
+        }
+        BoidViewBack.gameObject.SetActive(false);
+
+    }
+
 
     // リトライボタンでもう一回
     public void RetryButtonDown() => StartCoroutine(RetryUIAnim());
