@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +5,7 @@ using Boid.OOP;
 
 public class StartInstruction : MonoBehaviour
 {
+    [Header("UI before game start")]
     [SerializeField]
     Text AskText;
     [SerializeField]
@@ -14,6 +14,13 @@ public class StartInstruction : MonoBehaviour
     Button showSlideNo;
     [SerializeField]
     Text NextPageInfoText;
+    [SerializeField]
+    Button GameStartButton;
+
+    [Header("Slide before game start")]
+    [SerializeField]
+    Image instructionImg;
+
     [SerializeField]
     Sprite Opening_01;
     [SerializeField]
@@ -33,12 +40,8 @@ public class StartInstruction : MonoBehaviour
 
     [SerializeField]
     Sprite Opening_07;
-    [SerializeField]
-    Button GameStartButton;
-    [SerializeField]
-    GameManager gameManager;
-    [SerializeField]
-    Simulation simulation;
+
+    [Header("Audio")]
     [SerializeField]
     AudioSource gameAudio;
     [SerializeField]
@@ -46,36 +49,56 @@ public class StartInstruction : MonoBehaviour
     [SerializeField]
     AudioClip nextSlideSE;
 
-    Image instructionImg;
-    bool showSlide;
-    int slideCount = 1;
-    List<GameObject> HideObjs = new List<GameObject>();
+    [Header("Public references")]
+    [SerializeField]
+    GameManager gameManager;
+    [SerializeField]
+    UIManager uiManager;
+    [SerializeField]
+    Simulation simulation;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// 状況フラグ：スライドを見る/見ているか
+    /// </summary>
+    bool showSlide;
+
+    /// <summary>
+    /// スライドのページ送りカウンタ
+    /// </summary>
+    int slideCount = 1;
+    //List<GameObject> HideObjs = new List<GameObject>();
+
     public void Start()
     {
-        instructionImg = GetComponent<Image>();
+        // 初期化
         slideCount = 1;
 
-        // はい　いいえ　のスライド
-        instructionImg.gameObject.SetActive(true);
+        // 自身のGameObjectはこのScriptがついていて非アクティブにできないので透明化して見えなくする
+        //instructionImg.color = Color.clear;
+
+        // ゲーム説明選択オブジェクト表示
         AskText.gameObject.SetActive(true);
         showSlideYes.gameObject.SetActive(true);
         showSlideNo.gameObject.SetActive(true);
 
-        // まだ現れなくていいものは見えなくする
-        instructionImg.color = Color.clear;
+        // ゲーム開始前でもまだ現れないものは非アクティブ
+        instructionImg.gameObject.SetActive(false);
         GameStartButton.gameObject.SetActive(false);
         NextPageInfoText.gameObject.SetActive(false);
 
-        foreach (GameObject obj in GameObject.FindObjectsOfType(typeof(GameObject)))
+
+        foreach (var obj in gameManager.gamingObj)
         {
-            if (obj.tag == "GamingObj")
-            {
-                HideObjs.Add(obj);
-                obj.gameObject.SetActive(false);
-            }
+            obj.SetActive(false);
         }
+        // foreach (GameObject obj in GameObject.FindObjectsOfType(typeof(GameObject)))
+        // {
+        //     if (obj.tag == "GamingObj")
+        //     {
+        //         HideObjs.Add(obj);
+        //         obj.gameObject.SetActive(false);
+        //     }
+        // }
 
         Camera.main.transform.rotation = Quaternion.Euler(0, 0, 0);
 
@@ -84,7 +107,10 @@ public class StartInstruction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!showSlide) Camera.main.transform.Rotate(Vector3.up * 0.01f);
+
+        // ゲーム開始前ゆっくり回転
+        if (gameManager.beforeStart) Camera.main.transform.Rotate(Vector3.up * 0.01f);
+
         if (Input.GetMouseButtonDown(0) && showSlide)
         {
             switch (slideCount)
@@ -113,51 +139,78 @@ public class StartInstruction : MonoBehaviour
                 case 7:
                     instructionImg.sprite = Opening_07;
                     gameAudio.PlayOneShot(nextSlideSE);
+
                     NextPageInfoText.gameObject.SetActive(false);
                     GameStartButton.gameObject.SetActive(true);
+
+                    // スライド終了
                     showSlide = false;
                     break;
             }
             slideCount++;
         }
     }
+
+    // ゲーム説明「はい」押下時
     public void ShowSlideButtonDown()
     {
+        // スライドを見る
         showSlide = true;
-        instructionImg.color = Color.white;
-        instructionImg.sprite = Opening_01;
-        slideCount++;
+
+        // スライド遷移SE
         gameAudio.PlayOneShot(showSlideSE);
+
+        // スライド表示をアクティブに
+        instructionImg.gameObject.SetActive(true);
         NextPageInfoText.gameObject.SetActive(true);
 
+        //ゲーム説明選択非アクティブに
         AskText.gameObject.SetActive(false);
         showSlideYes.gameObject.SetActive(false);
         showSlideNo.gameObject.SetActive(false);
+
+        // スライドセット
+        instructionImg.sprite = Opening_01;
+
+        // ページカウントアップ
+        slideCount++;
+
     }
     public void GameStartButtonDown()
     {
-        /// ゲーム開始フラグ
-        /// このフラグで<seealso cref="ManipulateController"</>経由でSimulationがアクティブになる
+        /// ゲーム開始
         gameManager.isGaming = true;
-        simulation.isGameStarted = true;
-        simulation.isFirstGameFrame = true;
 
-        // Game Obj アクティブ
-        foreach (GameObject obj in HideObjs)
-        {
-            obj.SetActive(true);
-        }
+        //simulation.isGameStarted = true;
+        //simulation.isFirstGameFrame = true;
 
-        // ジェスチャーシグナルのタイマーセット
-        simulation.timer_powerful = Time.realtimeSinceStartup;
-        simulation.timer_flocking = Time.realtimeSinceStartup;
-
-        // instruction UI 非アクティブ
+        // ゲーム開始前UI 非アクティブ
         AskText.gameObject.SetActive(false);
         showSlideYes.gameObject.SetActive(false);
         showSlideNo.gameObject.SetActive(false);
         GameStartButton.gameObject.SetActive(false);
-        instructionImg.gameObject.SetActive(false); // 自身
+        instructionImg.gameObject.SetActive(false);
+
+        // GamingObj アクティブ
+        foreach (var obj in gameManager.gamingObj)
+        {
+            obj.SetActive(true);
+        }
+        // ゲーム開始後BoidViewBackだけはまだ非表示
+        uiManager.BoidViewBack.gameObject.SetActive(false);
+
+        // foreach (GameObject obj in HideObjs)
+        // {
+        //     obj.SetActive(true);
+        // }
+
+        // カメラの回転リセット
+        Camera.main.transform.eulerAngles = Vector3.zero;
+
+        // 信号のタイマーセット
+        simulation.timer_powerful = Time.realtimeSinceStartup;
+        simulation.timer_flocking = Time.realtimeSinceStartup;
+
     }
 
 }

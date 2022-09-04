@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace MediaPipe.HandPose
 {
@@ -18,8 +16,6 @@ namespace MediaPipe.HandPose
         [Space]
         [SerializeField] Material _jointMaterial = null;
         [SerializeField] Material _boneMaterial = null;
-        [Space]
-        [SerializeField] RawImage _monitorUI = null;
 
         #endregion
 
@@ -89,32 +85,27 @@ namespace MediaPipe.HandPose
                 if (i == 4)
                 {
                     MyBallColor[i].color = Color.red;
-                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
-                    //Debug.Log("[4]: " + _pipeline.GetKeyPoint(i));
+                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i], layer);
                 }
                 else if (i == 8)
                 {
                     MyBallColor[i].color = Color.blue;
-                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
-                    //Debug.Log("[8]: " + _pipeline.GetKeyPoint(i));
+                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i], layer);
                 }
                 else if (i == 12)
                 {
                     MyBallColor[i].color = Color.yellow;
-                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
-                    //Debug.Log("[12]: " + _pipeline.GetKeyPoint(i));
+                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i], layer);
                 }
                 else if (i == 16)
                 {
                     MyBallColor[i].color = Color.green;
-                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
-                    //Debug.Log("[16]: " + _pipeline.GetKeyPoint(i));
+                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i], layer);
                 }
                 else if (i == 20)
                 {
                     MyBallColor[i].color = Color.gray;
-                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i]/*_jointMaterial*/, layer);
-                    //Debug.Log("[20]: " + _pipeline.GetKeyPoint(i));
+                    Graphics.DrawMesh(_jointMesh, xform, MyBallColor[i], layer);
                 }
 
                 else
@@ -132,9 +123,6 @@ namespace MediaPipe.HandPose
                 var xform = CalculateBoneXform(p1, p2);
                 Graphics.DrawMesh(_boneMesh, xform, _boneMaterial, layer);
             }
-
-            // UI update
-            //_monitorUI.texture = _webcam.Texture;
         }
 
         #endregion

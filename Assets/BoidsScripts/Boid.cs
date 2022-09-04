@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 
 namespace Boid.OOP
 {
@@ -14,20 +13,51 @@ namespace Boid.OOP
         Vector3 accel = Vector3.zero;
         List<Boid> neighbors = new List<Boid>();
 
-        public bool DetectedObstacle; // 障害物を検知した際のフラグ
-        public bool movingToTaget;   //目標の点への移動フラグ
-        public Vector3 TargetPos; // 集まる座標
-        public ParticleSystem DyingParticle;  // 死にそうならパーティクルだす
-        public ParticleSystem AteParticle;  // 餌を食べたらパーティクルだす
+        /// <summary>
+        /// 状況フラグ：障害物を検知したかどうか
+        /// </summary>
+        public bool DetectedObstacle;
 
+        /// <summary>
+        /// 状況フラグ：餌に向かって移動中かどうか
+        /// </summary>
+        public bool movingToTaget;
+
+        /// <summary>
+        /// 餌のある座標
+        /// </summary>
+        public Vector3 TargetPos;
+
+        /// <summary>
+        /// 死にそうなパーティクル
+        /// </summary>
+        public ParticleSystem DyingParticle;
+        /// <summary>
+        /// 餌を食べたパーティクル
+        /// </summary>
+        public ParticleSystem AteParticle;
+
+        /// <summary>
+        /// 移動範囲のバウンディングボックス<br></br>
+        /// <seealso cref="Simulation.ColliderSize"/>から取得する
+        /// </summary>
         Vector3 BoundingBox;  // 移動範囲のバウンディングボックス
+
         float HP;
+
+        /// <summary>
+        /// 生成直後のMAXHP
+        /// </summary>
         float maxHP = 50.0f;
+
+        /// <summary>
+        /// 死のオーラを発し始めるHP
+        /// </summary>
         float dyingHP = 20f;
 
         void Start()
         {
-
+            // 初期値
             pos = transform.position;
             velocity = transform.forward * param.initSpeed;
 
@@ -44,19 +74,25 @@ namespace Boid.OOP
             UpdateAlignment();
             UpdateCohesion();
             UpdateMove();
-            UpdateAvoidObstacles(simulation.Obstacles);
+
+            //タイトルシーンならもう終了
+            if (simulation.isTitleNow) return;
+
+            UpdateAvoidObstacles(simulation.Obstacle.transform);
 
             if (movingToTaget) UpdateMoveToPoint(TargetPos);
 
             // HPを徐々に減らす
-            if (!simulation.isTitleNow) HP -= Time.deltaTime;
+            HP -= Time.deltaTime;
 
-            // HPがゲーム中でdyingHPを切ったら死にそうParticleだす
-            if (HP < dyingHP && simulation.gameManager.GameRemainTime > 0)
+            // HPがdyingHPを切ったら死にそうParticleだす
+            if (HP < dyingHP)
             {
                 DyingParticle?.gameObject.SetActive(true);
                 DyingParticle?.Play();
             }
+
+            // 回復したら消す
             if (HP > dyingHP)
             {
                 DyingParticle?.Clear();
@@ -65,7 +101,6 @@ namespace Boid.OOP
 
             // HPが0になったら死ぬ
             if (HP < 0) simulation.RemoveBoid(this);
-
         }
 
         /// <summary>
@@ -212,31 +247,29 @@ namespace Boid.OOP
         /// <summary>
         /// 障害物に近ければ近いほど逃げる方向のベクトルを強めaccelに加算
         /// </summary>
-        void UpdateAvoidObstacles(Transform[] Obstalcles)
+        void UpdateAvoidObstacles(Transform Obstalcle)
         {
-            foreach (Transform obs in simulation.Obstacles)
+            // 空間の距離がまだ避ける距離でない、または非アクティブならなにもしない
+            if (Vector3.Distance(pos, Obstalcle.position) >= param.avoidDistance ||
+            !Obstalcle.gameObject.activeInHierarchy) return;
+
+            // 見つけたらSimulation.detectedCountに見つけたBoidとして加算する
+            if (!DetectedObstacle)
             {
-                // 空間の距離がまだ避ける距離でない、または非アクティブならなにもしない
-                if (Vector3.Distance(pos, obs.position) >= param.avoidDistance ||
-                !obs.gameObject.activeInHierarchy) continue;
-
-                // 見つけたらSimulation.detectedCountに見つけたBoidとして加算する
-                if (!DetectedObstacle)
-                {
-                    simulation.detectedCount++;
-                    DetectedObstacle = true;
-                }
-
-                // Wallと違って六面から(反対側,一つの軸に二つよける対象がある)ではないので計算量はXYZ軸一回づつのみで済む
-                // Vector3.Distanceをとるとfloatが返されVector成分情報が失われてしまうので成分ごとにCalc
-                accel +=
-                    CalcAccelAgainstObstacle(pos.x - obs.transform.position.x, Vector3.left) +
-                    CalcAccelAgainstObstacle(pos.y - obs.transform.position.y, Vector3.down) +
-                    CalcAccelAgainstObstacle(pos.z - obs.transform.position.z, Vector3.back);
-
-                Debug.DrawLine(pos, pos + accel, Color.magenta);
-
+                simulation.detectedCount++;
+                DetectedObstacle = true;
             }
+
+            // Wallと違って六面から(反対側,一つの軸に二つよける対象がある)ではないので計算量はXYZ軸一回づつのみで済む
+            // Vector3.Distanceをとるとfloatが返されVector成分情報が失われてしまうので成分ごとにCalc
+            accel +=
+                CalcAccelAgainstObstacle(pos.x - Obstalcle.position.x, Vector3.left) +
+                CalcAccelAgainstObstacle(pos.y - Obstalcle.position.y, Vector3.down) +
+                CalcAccelAgainstObstacle(pos.z - Obstalcle.position.z, Vector3.back);
+
+            Debug.DrawLine(pos, pos + accel, Color.magenta);
+
+
         }
 
         /// <summary>

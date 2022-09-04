@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MediaPipe.HandPose;
 using Boid.OOP;
@@ -7,6 +5,22 @@ using Boid.OOP;
 
 public class ManipulateController : MonoBehaviour
 {
+    [SerializeField]
+    Camera cam;
+    [SerializeField]
+    ParticleSystem PowerfulTargetParticle;
+    [HideInInspector]
+    public ParticleSystem PowerfulTargetPosParticleInstantiated;
+
+    [Header("Audio")]
+    [SerializeField]
+    AudioSource gameAudio;
+    [SerializeField]
+    AudioClip SwipeSE;
+    [SerializeField]
+    AudioClip FeedSE;
+
+    [Header("Public refernces")]
     [SerializeField]
     Classification classfication;
     [SerializeField]
@@ -17,46 +31,51 @@ public class ManipulateController : MonoBehaviour
     UIManager uiManager;
     [SerializeField]
     GameManager gameManager;
-    [SerializeField]
-    Camera cam;
-    [SerializeField]
-    AudioSource gameAudio;
-    [SerializeField]
-    AudioClip SwipeSE;
-    [SerializeField]
-    AudioClip FeedSE;
-    [HideInInspector]
-    public ParticleSystem TargetPosParticleInstantiated;
-    public ParticleSystem PowerfulTargetParticle;
 
-    bool actionReadyFlag;
-    bool isMovingObstacle;
+    /// <summary>
+    /// 命令ゲージの値
+    /// </summary>
     public float chargeTime = 0;
+    /// <summary>
+    /// 命令ゲージの満タンの値
+    /// </summary>
     public float chargeTimeMax = 10;
-    float sensitiveRotate = 5.0f;
+
+    /// <summary>
+    /// 状況フラグ：命令が発動できる状態かどうか
+    /// </summary>
+    bool actionReadyFlag;
+
+    /// <summary>
+    /// 状況フラグ：障害物が動いているかどうか
+    /// </summary>
+    bool isMovingObstacle;
+
+    /// <summary>
+    /// 障害物の動くスピード
+    /// </summary>
+    float obsSpeed;
+
     float lookObsDistance = 12f;
     float nonVisibleDistance = 13f;
     float lookTargetDistance = 15f;
     float startTime;
-    float obsSpeed;
+
     Vector3 spawnPos;
     Vector3 disappearPos;
-    GameObject Obstacle;
 
 
-    // Start is called before the first frame update
+
     void Start()
     {
-        Obstacle = simulation.Obstacles[0].gameObject;
-
         // 障害物は未だ非表示
-        Obstacle.SetActive(false);
+        simulation.Obstacle.SetActive(false);
 
-        obsSpeed = 5f;  // 3~10
-
+        // 障害物が動く速度指定
+        obsSpeed = 5f;
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         // 秒計算
@@ -65,17 +84,13 @@ public class ManipulateController : MonoBehaviour
         // Action可能フラグを立てる 満タンだよ示す処理UI→ UIManager
         if (chargeTime >= chargeTimeMax) actionReadyFlag = true;
 
-        // マウスクリックされ続け、Action可能なら処理をする
+        // マウスクリック長押下中かつAction可能なら処理をする
         if (Input.GetMouseButton(0) && actionReadyFlag)
         {
-
-            // クリック中ジェスチャ判定することで待機が再現できる(Finish, Point以外ははじくから)
-            // ここからよびだすとよびだしにいったときにはもうFeedじゃない辺帝になってしまう時があるので
-            //むこうでFeed出た時のこっちを呼ぶまたはフラグを立てるようにする？
+            // 手の形状から推論して得られたジェスチャーごとに処理分け
             switch (classfication.inferenceResult)
             {
-
-                // Obstacle
+                // 「食われるぞ！」の命令 / Obstacle
                 case "Swipe":
 
                     //ローカル軸に沿った、奥行き・start-end距離のベクトル
@@ -89,7 +104,7 @@ public class ManipulateController : MonoBehaviour
                     disappearPos = camVectorForward + camVectorRight;
 
                     // 生成する座標にセット
-                    Obstacle.transform.position = spawnPos;
+                    simulation.Obstacle.transform.position = spawnPos;
 
                     // 移動開始のフラグ立てる →移動開始
                     isMovingObstacle = true;
@@ -109,25 +124,27 @@ public class ManipulateController : MonoBehaviour
                     break;
 
 
-                // Feed
+                // 「餌食え！」の命令 / Feed
                 case "Feed":
 
                     /// 餌やりフラグ立てる → <seealso cref="Simulation.Update()"/>で処理
                     simulation.isFeeded = true;
 
-                    /// Boidsが向かう座標をカメラの中央に設定する → <seealso cref="Simulation.SetBoidTargetPos(Vector3)"/>で処理
-                    ///  障害物と同じカメラからの距離
+                    // Boidsが向かう餌のある座標をカメラの中央に設定する 
                     Vector3 targetPos = cam.transform.forward * lookTargetDistance;
+
+                    // 個々のBoidに教える
                     simulation.SetBoidTargetPos(targetPos);
 
-                    Debug.DrawLine(cam.transform.position, cam.transform.forward * lookTargetDistance, Color.red);
-
-                    // 集まる座標のところにParticle出してしばらくして消す
+                    // 集まる座標のところにParticleを出現させ、再生、一定時間後削除
                     targetPos.y += 2;
-                    TargetPosParticleInstantiated = Instantiate(PowerfulTargetParticle, targetPos, Quaternion.identity);
-                    TargetPosParticleInstantiated.Play();
-                    Destroy(TargetPosParticleInstantiated.gameObject, param.DurationPowerful);
-                    if (!gameManager.isGaming) Destroy(TargetPosParticleInstantiated.gameObject);
+                    PowerfulTargetPosParticleInstantiated =
+                                    Instantiate(PowerfulTargetParticle, targetPos, Quaternion.identity);
+
+                    PowerfulTargetPosParticleInstantiated.Play();
+
+                    Destroy(PowerfulTargetPosParticleInstantiated.gameObject, param.DurationPowerful);
+                    if (!gameManager.isGaming) Destroy(PowerfulTargetPosParticleInstantiated.gameObject);
 
                     // 命令したことのUI表示の処理
                     StartCoroutine(uiManager.PowerfulGestureInvoked());
@@ -150,33 +167,33 @@ public class ManipulateController : MonoBehaviour
         // 移動処理
         if (isMovingObstacle)
         {
-            // 具現化
-            if (!Obstacle.gameObject.activeInHierarchy) Obstacle.SetActive(true);
+            // アクティブ化
+            if (!simulation.Obstacle.activeInHierarchy) simulation.Obstacle.SetActive(true);
 
             //現在フレームの補間値を計算
             float interpolatedValue = (Time.time - startTime) / Vector3.Distance(spawnPos, disappearPos);
 
             // 線形補完で移動
-            Obstacle.transform.position = Vector3.Lerp(spawnPos, disappearPos, interpolatedValue * obsSpeed);
+            simulation.Obstacle.transform.position = Vector3.Lerp(spawnPos, disappearPos, interpolatedValue * obsSpeed);
 
             // 進行方向を向ける、-zが前になっているので * -1
-            Obstacle.transform.forward = (disappearPos - spawnPos).normalized * -1;
+            simulation.Obstacle.transform.forward = (disappearPos - spawnPos).normalized * -1;
 
             // 移動終了時
-            if (Obstacle.transform.position == disappearPos)
+            if (simulation.Obstacle.transform.position == disappearPos)
             {
                 // フラグ下げる
                 isMovingObstacle = false;
 
-                Obstacle.SetActive(false);
+                simulation.Obstacle.SetActive(false);
             }
 
         }
 
-        // ゲーム終了していたらこのManipulaterも非アクティブになる　餌パーティクル削除・障害物非表示(シーンオブジェクトのため削除×)
-        if (!gameManager.isGaming)
-        {
-            Destroy(PowerfulTargetParticle);
-        }
+        // // ゲーム終了していたらこのManipulatorも非アクティブになる　餌パーティクル削除・障害物非表示(シーンオブジェクトのため削除×)
+        // if (!gameManager.isGaming)
+        // {
+        //     Destroy(PowerfulTargetParticle);
+        // }
     }
 }

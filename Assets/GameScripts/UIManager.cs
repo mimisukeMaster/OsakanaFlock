@@ -5,28 +5,19 @@ using Boid;
 using Boid.OOP;
 using DG.Tweening;
 using TMPro;
-using MediaPipe.HandPose;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Canvas")]
-    [SerializeField]
-    RectTransform canvas;
-    [SerializeField]
-    Camera uiCamera;
-
-    [Header("Gauge/Info")]
+    [Header("ScoreGauge/Info")]
     public Slider ScoreGauge;
-    [SerializeField]
-    Slider ActionGauge;
+    public Text RemainTimeText;
+    public Button BoidViewBack;
     [SerializeField]
     Text AliveBoidsText;
+
+    [Header("ActionGauge/Cursor")]
     [SerializeField]
-    Button BoidViewBack;
-
-    /// RemainTimeTextはゲームの時間管理なので<seealso cref="GameManager.RemainTimeText"/>へ
-
-    [Header("image attach to")]
+    Slider ActionGauge;
     [SerializeField]
     Sprite ActionGaugeImg;
     [SerializeField]
@@ -68,7 +59,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     ParticleSystem PowrfulInvokedParticle;
 
-    [Header("Finish後のUI")]
+    [Header("Finish UIs")]
     [SerializeField]
     Image FinishUIPanel;
     [SerializeField]
@@ -82,19 +73,17 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     TMP_ColorGradient NormaClearFailed;
     [SerializeField]
-    Button RestartButton;
+    Button RetryButton;
     [SerializeField]
     Animation SceneRoadTransition;
 
-    [Space()]
+    [Header("Public references")]
     [SerializeField]
     Param param;
     [SerializeField]
     Simulation simulation;
     [SerializeField]
     ManipulateController manipulateController;
-    [SerializeField]
-    HandAnimator handAnimator;
     [SerializeField]
     GameManager gameManager;
     [SerializeField]
@@ -108,46 +97,94 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     AudioClip retrySE;
 
-    float score_isFlocking;
-    float score_isPowerful;
-    float currentTime;
-    float maxBoids;
-    int NumOfBoids;
+    /// <summary>
+    /// スコア制御：ノルマスコアの値
+    /// </summary>
     public float normaScore;
-    float normaProportion;
-    Color FlockInfoColor;
-    Color PowerfulInfoColor;
-    Color ClassificationResultColor;
 
+    /// <summary>
+    /// スコア制御：MAXを1とした時のノルマスコアの割合
+    /// </summary>
+    float normaProportion;
+
+    /// <summary>
+    /// スコア制御：群れているかどうかを数値化
+    /// </summary>
+    float score_isFlocking;
+
+    /// <summary>
+    /// スコア制御：元気かどうかを数値化
+    /// </summary>
+    float score_isPowerful;
+
+    /// <summary>
+    /// 1秒間を測るタイマー
+    /// </summary>
+    float currentTime;
+
+    /// <summary>
+    /// Boids処理：ゲーム開始直後の最大Boid数
+    /// </summary>
+    int maxBoids;
+
+    /// <summary>
+    /// Boids処理：現在のBoid数
+    /// </summary>
+    int NumOfBoids;
+
+
+    /// <summary>
+    /// 状況フラグ：群れステータスが点灯中かどうか
+    /// </summary>
     bool isFlockTrueAnimation;
+
+    /// <summary>
+    /// 状況フラグ：元気ステータスが点灯中かどうか
+    /// </summary>
     bool isPowerTrueAnimation;
+
+    /// <summary>
+    /// 状況フラグ：おさかなビュー中かどうか
+    /// </summary>
     bool boidViewMode;
 
+    /// <summary>
+    /// 「餌食え！」のテキストの色情報
+    /// </summary>
+    Color FlockInfoColor;
 
+    /// <summary>
+    /// 「食われるぞ！」のテキストの色情報
+    /// </summary>
+    Color PowerfulInfoColor;
 
+    /// <summary>
+    /// 初期化 リロード時 値が変わっているものを戻す
+    /// </summary>
     public void Awake()
     {
-        // 初期化 Startの前に呼ばれる、リロードするとき値が変わっているものを戻す
+        // 色(DOTween.DOFadeにより変化)
         PowerfulInvokedInfo.color = new Color(1, 1, 1, 0);
         FlockInvokedInfo.color = new Color(1, 1, 1, 0);
-
-        BoidViewBack.gameObject.SetActive(false);
-
         FinishUIPanel.color = new Color(1, 1, 1, 0);
+
+        // スコア表示のUI
         FinishUIPanel.gameObject.SetActive(false);
         ScoreText.gameObject.SetActive(false);
         NormaResultText.gameObject.SetActive(false);
 
-        RestartButton.gameObject.SetActive(false);
+        // リスタートのUI
+        RetryButton.gameObject.SetActive(false);
         SceneRoadTransition.gameObject.SetActive(false);
 
+        // 値の初期化
         ScoreGauge.value = 0;
         manipulateController.chargeTime = 0;
-        maxBoids = simulation.boidCount;
+        //maxBoids = simulation.boidCount;
 
 
     }
-    // Start is called before the first frame update
+
     void Start()
     {
         // UIバーのMAX時を設定する
@@ -163,39 +200,49 @@ public class UIManager : MonoBehaviour
         normaProportion = 0.7f;
         normaScore = ScoreGauge.maxValue * normaProportion;
 
-        // UISpriteの８割のところにカーソル描画
+        // UISpriteの (normaProportion * 100) % のところにカーソル描画
         NormaCursor.rectTransform.anchoredPosition = new Vector3(
             ScoreGauge.GetComponent<RectTransform>().sizeDelta.x * (normaProportion - 0.5f),
             NormaCursor.rectTransform.anchoredPosition.y, 0);
         NormaCursor.GetComponentInChildren<Text>().text = normaProportion * 100 + "点";
     }
 
-    // Update is called once per frame
+
     void Update()
     {
-        // スコア計算　他の処理が入ったらCaculateScore()つくる
+        // ゲーム中でなければ何もしない
+        if (!gameManager.isGaming) return;
+
+        // スコア計算
         score_isFlocking = param.isFlocking == true ? 1 : 0.5f;
         score_isPowerful = param.isPowerful == true ? 1 : 0.5f;
         NumOfBoids = simulation.boids_.Count;
 
-        // 現在のスコアを反映 一秒ごとに処理する
+        /// 現在のスコアを反映 一秒ごとに処理する
+        /// <seealso cref="GameManager.GameTime"/> の値が最大のスコアになる計算
         currentTime += Time.deltaTime;
-        if (currentTime > 1 && gameManager.isGaming)
+        if (currentTime > 1)
         {
+            // 一度に追加される値の最大は 1 * 1 * 1 = 1
             ScoreGauge.value += score_isFlocking * score_isPowerful * (NumOfBoids / maxBoids);
             currentTime = 0;
         }
-        // 命令ゲージUI計算
+
+        // 命令ゲージの値
         ActionGauge.value = manipulateController.chargeTime;
 
         // 残りBoid数も表示
         AliveBoidsText.text = "お魚:" + NumOfBoids + "匹";
+
+        // 文字色変更
         if (NumOfBoids < 100) AliveBoidsText.color = Color.red;
+
+        // 元々赤で100匹以上いたら戻す
         else if (AliveBoidsText.color == Color.red) AliveBoidsText.color = Color.white;
 
 
         // 満タンならSpriteを変えてアニメーション
-        if (ActionGauge.value == ActionGauge.maxValue && gameManager.isGaming)
+        if (ActionGauge.value == ActionGauge.maxValue)
         {
             StartCoroutine(ActionGaugeInfoAnim());
         }
@@ -205,7 +252,7 @@ public class UIManager : MonoBehaviour
             ActionGaugeImg_info.gameObject.SetActive(false);
         }
 
-        // isFlocking, isPowerful の信号処理
+        // isFlocking(群れ), isPowerful(元気) の信号処理
         if (!isFlockTrueAnimation)
         {
             // isFlocking中なら
@@ -236,20 +283,27 @@ public class UIManager : MonoBehaviour
     {
         isPowerTrueAnimation = true;
         IsPowerfulCursor.sprite = isPowerfulTrueImg;
-        yield return new WaitForSeconds(Time.deltaTime);
+        yield return new WaitForSeconds(0.3f);
         isPowerTrueAnimation = false;
     }
     IEnumerator ActionGaugeInfoAnim()
     {
+        // 満タンならゲージ色を変える
         ActionGaugeContent.sprite = ActionGaugeImg_max;
-        if (!ActionGaugeImg_info.gameObject.activeInHierarchy && !boidViewMode) ActionGaugeImg_info.gameObject.SetActive(true);
-        while (true)
+
+        // 非アクティブからアクティブにしアニメーション
+        if (!ActionGaugeImg_info.gameObject.activeInHierarchy && !boidViewMode)
         {
-            ActionGaugeImg_info.DORotate(new Vector3(0, 0, 20), 1, RotateMode.Fast);
-            yield return new WaitForSeconds(1.0f);
-            ActionGaugeImg_info.DORotate(new Vector3(0, 0, -20), 1, RotateMode.Fast);
-            yield return new WaitForSeconds(1.0f);
-            if (ActionGauge.value != ActionGauge.maxValue || gameManager.isGaming) break;
+            ActionGaugeImg_info.gameObject.SetActive(true);
+
+            while (true)
+            {
+                ActionGaugeImg_info.DORotate(new Vector3(0, 0, 10), 1, RotateMode.Fast);
+                yield return new WaitForSeconds(1.0f);
+                ActionGaugeImg_info.DORotate(new Vector3(0, 0, -10), 1, RotateMode.Fast);
+                yield return new WaitForSeconds(1.0f);
+                if (ActionGauge.value != ActionGauge.maxValue) break;
+            }
         }
     }
     public IEnumerator FlockGestureInvoked()
@@ -294,13 +348,14 @@ public class UIManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
     }
+
     /// <summary>
     /// <seealso cref="GameManager.Update()"/>からゲーム終了後呼ばれる
     /// </summary>
     public IEnumerator GameFinishAnim()
     {
         //表示中の場合は消す
-        ActionGaugeImg_info.gameObject.SetActive(false);
+        //ActionGaugeImg_info.gameObject.SetActive(false);
 
         FinishUIPanel.gameObject.SetActive(true);
         FinishUIPanel.DOFade(0.6f, 2);
@@ -339,37 +394,56 @@ public class UIManager : MonoBehaviour
             gameAudio.PlayOneShot(normaFailedSE);
         }
         yield return new WaitForSeconds(1.5f);
-        RestartButton.gameObject.SetActive(true);
+        RetryButton.gameObject.SetActive(true);
 
     }
 
-    // おさかなビューボタンで鑑賞モード
+    /// <summary> 
+    /// おさかなビューボタンで鑑賞モード
+    /// </summary>
     public void BoidViewButtonDown()
     {
+        // 視点となるお魚がいなければreturn
         if (simulation.boids_.Count == 0) return;
+
+        // おさかなビュー発動中
         boidViewMode = true;
+
+        // listのうち0番目のお魚は上のreturnを回避したなら確実にいるので、その視点に移る
         Camera.main.transform.position = simulation.boids_[0].transform.position;
         Camera.main.transform.SetParent(simulation.boids_[0].transform);
         Camera.main.transform.localEulerAngles = Vector3.zero;
 
-        Debug.Log(gameManager.gamingObj.Length);
+        // gamingObjタグのものは非アクティブ化
         foreach (var obj in gameManager.gamingObj)
         {
             obj.SetActive(false);
         }
+
+        // 戻るボタンをアクティブに
         BoidViewBack.gameObject.SetActive(true);
     }
+
+    /// <summary>
+    /// お魚ビューから戻るボタン押下時
+    /// </summary>
     public void BoidViewButtonBackDown()
     {
+        // おさかなビュー終了
         boidViewMode = false;
+
+        //元の座標へ
         Camera.main.transform.parent = null;
         Camera.main.transform.position = Vector3.zero;
         Camera.main.transform.eulerAngles = Vector3.zero;
 
+        // gamingObjタグのものをアクティブ化
         foreach (var obj in gameManager.gamingObj)
         {
             obj.SetActive(true);
         }
+
+        // 戻るボタンを非アクティブに
         BoidViewBack.gameObject.SetActive(false);
 
     }
@@ -383,8 +457,10 @@ public class UIManager : MonoBehaviour
         // 再生中のノルマ達成パーティクルを停止
         NormaAchievedParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
+        // シーン遷移アニメーション
         SceneRoadTransition.gameObject.SetActive(true);
         SceneRoadTransition.Play();
+
         yield return new WaitForSeconds(2);
         gameManager.ReloadScene();
     }
