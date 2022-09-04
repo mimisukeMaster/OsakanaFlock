@@ -753,7 +753,6 @@ GameObject:
   - component: {fileID: 183888156}
   - component: {fileID: 183888158}
   - component: {fileID: 183888157}
-  - component: {fileID: 183888159}
   m_Layer: 5
   m_Name: isFlockCursor
   m_TagString: GamingObj
@@ -818,22 +817,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 183888155}
   m_CullTransparentMesh: 1
---- !u!111 &183888159
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 183888155}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: f9d5e7c91045e3347ae4534f988bbee8, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: f9d5e7c91045e3347ae4534f988bbee8, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 0
 --- !u!1 &221175277
 GameObject:
   m_ObjectHideFlags: 0
@@ -2742,8 +2725,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u98DF\u308F\u308C\u308B\u305E\uFF01"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 35e46fbb70ae31c48ad3bb19420b22f3, type: 2}
-  m_sharedMaterial: {fileID: -5427685044723069617, guid: 35e46fbb70ae31c48ad3bb19420b22f3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ae837b14bc3af9a40819de111146632e, type: 2}
+  m_sharedMaterial: {fileID: -5074343723023662530, guid: ae837b14bc3af9a40819de111146632e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3155,8 +3138,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 000
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0afa4cb5cdc6de44a8d6296873f89273, type: 2}
-  m_sharedMaterial: {fileID: -2972073517455117355, guid: 0afa4cb5cdc6de44a8d6296873f89273, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 906c996e599adf94193942c0be113b17, type: 2}
+  m_sharedMaterial: {fileID: 3355331090902846490, guid: 906c996e599adf94193942c0be113b17, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4130,7 +4113,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 1787523304}
   rotationSpeed: {x: 0.1, y: 0.1}
-  reverse: 0
 --- !u!1 &1810460487
 GameObject:
   m_ObjectHideFlags: 0
@@ -4190,8 +4172,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u7FA4\u308C\u3000\u3000\u5143\u6C17"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4fc5314f8ce7f2144b4ab93b6acf3626, type: 2}
-  m_sharedMaterial: {fileID: -1309217949207785775, guid: 4fc5314f8ce7f2144b4ab93b6acf3626, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c6238e7ec6da6ab40b0861b9db8f73da, type: 2}
+  m_sharedMaterial: {fileID: -3861442735330259384, guid: c6238e7ec6da6ab40b0861b9db8f73da, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4612,8 +4594,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u30CE\u30EB\u30DE\u30AF\u30EA\u30A2!"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: c6bc219d787b82d45b9b01506e721168, type: 2}
-  m_sharedMaterial: {fileID: 4125224275781541208, guid: c6bc219d787b82d45b9b01506e721168, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6ee851327fbc99f4c8ade4c956beb3dd, type: 2}
+  m_sharedMaterial: {fileID: -6165717223707010904, guid: 6ee851327fbc99f4c8ade4c956beb3dd, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4724,7 +4706,6 @@ MonoBehaviour:
   _boneMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   _jointMaterial: {fileID: 2100000, guid: bb02f7161ea1a4d6a85beb5b7749894d, type: 2}
   _boneMaterial: {fileID: 2100000, guid: 639c7a175a7bf4296b211c6afc02329c, type: 2}
-  _monitorUI: {fileID: 0}
   BallColor: {fileID: 2100000, guid: 34c123ae930560b4393654e015c6ecb1, type: 2}
 --- !u!114 &1932201620
 MonoBehaviour:
@@ -44296,7 +44277,7 @@ RectTransform:
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 1209897565}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

@@ -248,8 +248,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u304A\u3055\u304B\u306A\u30D5\u30ED\u30C3\u30AF"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 24a6946d99f9c7e4cb7fee2bea68fe36, type: 2}
-  m_sharedMaterial: {fileID: 8459730062714581777, guid: 24a6946d99f9c7e4cb7fee2bea68fe36, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6880ba5c98e195b419553ff98354fb99, type: 2}
+  m_sharedMaterial: {fileID: -9218684623473993271, guid: 6880ba5c98e195b419553ff98354fb99, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -530,12 +530,14 @@ MonoBehaviour:
   boidPrefab: {fileID: 3163070177752449559, guid: 5b15acc76dcac384f8bc139ffcdc76ef, type: 3}
   param: {fileID: 11400000, guid: 5d37f9f51f0a48941aba9581f9b81667, type: 2}
   gameManager: {fileID: 0}
-  Obstacles: []
-  ColliderSize: {x: 0, y: 0, z: 0}
-  detectedCount: 0
-  isFeeded: 0
+  boids_: []
   isTitleNow: 0
-  isGameStarted: 0
+  isFeeded: 0
+  timer_flocking: 0
+  timer_powerful: 0
+  detectedCount: 0
+  Obstacle: {fileID: 0}
+  ColliderSize: {x: 0, y: 0, z: 0}
 --- !u!4 &927683984
 Transform:
   m_ObjectHideFlags: 0
@@ -855,7 +857,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 1787523304}
   rotationSpeed: {x: 0.1, y: 0.1}
-  reverse: 0
 --- !u!1 &1984181283
 GameObject:
   m_ObjectHideFlags: 0
@@ -915,8 +916,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u30AF\u30EA\u30C3\u30AF\u3067\u7D9A\u884C"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 24a6946d99f9c7e4cb7fee2bea68fe36, type: 2}
-  m_sharedMaterial: {fileID: 8459730062714581777, guid: 24a6946d99f9c7e4cb7fee2bea68fe36, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6880ba5c98e195b419553ff98354fb99, type: 2}
+  m_sharedMaterial: {fileID: -9218684623473993271, guid: 6880ba5c98e195b419553ff98354fb99, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

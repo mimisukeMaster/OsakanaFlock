@@ -1,0 +1,12 @@
+Font: Corporate Logo ver2  Style: Medium
+Point Size: 50   SP/PD Ratio: 10.0%
+
+Characters included: 16/16
+Missing characters: 0
+Excluded characters: 0
+
+Characters missing from font file:
+----------------------------------------
+
+Characters excluded from packing:
+----------------------------------------
