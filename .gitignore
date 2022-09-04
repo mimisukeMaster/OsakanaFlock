@@ -37,6 +37,10 @@ ExportedObj/
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
 
+
+# Unity TMPro FontAssets directory
+[Ff]ontAsset_origin/
+
 # Builds
 *.apk
 *.unitypackage
