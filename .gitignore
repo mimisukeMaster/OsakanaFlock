@@ -1,7 +1,6 @@
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
-[Bb]uild*/
 [Bb]uilds/
 Assets/AssetStoreTools*
 
@@ -38,10 +37,11 @@ ExportedObj/
 sysinfo.txt
 
 
-# Unity TMPro FontAssets directory
-[Ff]ontAssets_origin/
+# Local directories/files
+[Bb]uild_my/
+[Ff]ontAssets_origin*
+OsakanaFlock_PV*
 
 # Builds
 *.apk
 *.unitypackage
-build*.zip

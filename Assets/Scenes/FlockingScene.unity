@@ -2130,8 +2130,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u5DE6\u9577\u62BC\u3057\u3067\u767A\u52D5\uFF01"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a46c103a868d7434c8adad7a4d1885f4, type: 2}
-  m_sharedMaterial: {fileID: 6505809954617349035, guid: a46c103a868d7434c8adad7a4d1885f4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 53c060dc0773d3043a1d3144d7ae15c8, type: 2}
+  m_sharedMaterial: {fileID: 8284606173632733388, guid: 53c060dc0773d3043a1d3144d7ae15c8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -44277,7 +44277,7 @@ RectTransform:
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 1209897565}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
