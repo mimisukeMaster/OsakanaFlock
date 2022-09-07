@@ -1,9 +1,22 @@
-# OsakanaFlock
+# OsakanaFlock src内FlockingBoidManipulatorに変更中
 <br><p align="center">
 <img src="https://user-images.githubusercontent.com/81568941/188664081-43ba3a7b-7be9-4795-883f-4e51d3c2c28a.png" width="450px"></p>
 <br><p align="center">
-    [<img  src="https://img.shields.io/hexpm/l/plug?color=red&logo=apache">](https://www.apache.org/licenses/) <img src="https://img.shields.io/github/stars/mimisukeMaster/HandPoseBarracuda-Gesture-Boids?logo=github"> [<img src="https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc">](https://open.vscode.dev/mimisukeMaster/HandPoseBarracuda-Gasture-Boids) <img src="https://img.shields.io/badge/build-passing-test.svg?&logo=github"> <img src="https://img.shields.io/badge/build Windows-successed-lightbule.svg?&logo=windows"> <img src="https://img.shields.io/badge/build WebGL-successed-red.svg?&logo=webgl">
+    <img src="https://img.shields.io/badge/build-passing-test.svg?&logo=github">
+    [<img src="https://img.shields.io/github/stars/mimisukeMaster/FlockingBoidManipulator?color=yellow&logo=github">](https://github.com/mimisukeMaster/HandPoseBarracuda-Gesture-Boids/star)
+    <img src="https://img.shields.io/badge/PRs-welcome-orange?logo=">
+    [<img  src="https://img.shields.io/hexpm/l/plug?color=red&logo=apache">](https://www.apache.org/licenses/)
+    <img src="https://img.shields.io/github/issues/mimisukeMaster/FlockingBoidManipulator"><br>
+    <img src="https://img.shields.io/badge/Unity%202020.x-supported-blue.svg?&logo=unity">
+    <img src="https://img.shields.io/badge/build Windows-successed-succeess.svg?&logo=windows"> 
+    <img src="https://img.shields.io/badge/build WebGL-successed-succeess.svg?&logo=webgl"><br>
+    <img src="https://img.shields.io/github/v/release/mimisukeMaster/FlockingBoidManipulator?color=green&include_prereleases&logo=gitbook&logoColor=white">
+    <img src="https://img.shields.io/github/release-date/mimisukeMaster/FlockingBoidManipulator?color=yellowgreen">
+    <img src="https://img.shields.io/github/downloads/mimisukeMaster/FlockingBoidManipulator/total?color=ff6"><br>
+    <img src="https://img.shields.io/github/repo-size/mimisukeMaster/FlockingBoidManipulator?color=ff69b4">
+    [<img src="https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc">](https://open.vscode.dev/mimisukeMaster/HandPoseBarracuda-Gasture-Boids)
     </p>
+
 
 ## 概要
 Unity Youth Creator Cup 2022 のエントリー作品<br> 
