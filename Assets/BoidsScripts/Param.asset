@@ -15,8 +15,8 @@ MonoBehaviour:
   initSpeed: 2
   minSpeed: 3
   maxSpeed: 7
-  neighborDistance: 0
-  neighborFov: 1
+  neighborDistance: 2.5
+  neighborFov: 120
   separationWeight: 6.5
   wallScale: 30
   wallDistance: 3
@@ -28,7 +28,7 @@ MonoBehaviour:
   avoidDistance: 9
   avoidWeight: 1
   detectedObstacleBoids: 15
-  Duration_flocking: 20
-  isFlocking: 0
+  DurationFlocking: 20
+  isFlocking: 1
   DurationPowerful: 10
   isPowerful: 1
