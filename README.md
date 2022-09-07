@@ -2,7 +2,7 @@
 <br><p align="center">
 <img src="https://user-images.githubusercontent.com/81568941/188664081-43ba3a7b-7be9-4795-883f-4e51d3c2c28a.png" width="450px"></p>
 <br><p align="center">
-    [<img  src="https://img.shields.io/hexpm/l/plug?color=red&logo=apache">](https://www.apache.org/licenses/) <img src="https://img.shields.io/github/stars/mimisukeMaster/HandPoseBarracuda-Gesture-Boids?logo=github"> [<img src="https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc">](https://open.vscode.dev/mimisukeMaster/HandPoseBarracuda-Gasture-Boids)
+    [<img  src="https://img.shields.io/hexpm/l/plug?color=red&logo=apache">](https://www.apache.org/licenses/) <img src="https://img.shields.io/github/stars/mimisukeMaster/HandPoseBarracuda-Gesture-Boids?logo=github"> [<img src="https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc">](https://open.vscode.dev/mimisukeMaster/HandPoseBarracuda-Gasture-Boids) <img src="https://img.shields.io/badge/build-passing-test.svg?&logo=github"> <img src="https://img.shields.io/badge/build Windows-successed-lightbule.svg?&logo=windows"> <img src="https://img.shields.io/badge/build WebGL-successed-red.svg?&logo=webgl">
     </p>
 
 ## 概要
@@ -41,4 +41,4 @@ NVIDIA GeForce GTX 1050
 
 ## Author
 みみすけ名人 mimisukeMaster <br>
-[<img src="https://img.shields.io/badge/-Twitter-%231DA1F2.svg?&style=flat-square&logo=twitter&logoColor=white">](https://twitter.com/mimisukeMaster) [<img src="https://img.shields.io/badge/-ArtStation-artstation.svg?&style=flat-square&logo=artstation&logoColor=blue&color=gray">](https://www.artstation.com/mimisukemaster) [<img src="https://img.shields.io/badge/-Youtube-youtube.svg?&style=flat-square&logo=youtube&logoColor=white&color=red">](https://www.youtube.com/channel/UCWnmp8t4GJzcjBxhtgo9rKQ)
+[<img src="https://img.shields.io/badge/-Twitter-%231DA1F2.svg?&style=flat-square&logo=twitter&logoColor=white">]( ://twitter.com/mimisukeMaster) [<img src="https://img.shields.io/badge/-ArtStation-artstation.svg?&style=flat-square&logo=artstation&logoColor=blue&color=gray">](https://www.artstation.com/mimisukemaster) [<img src="https://img.shields.io/badge/-Youtube-youtube.svg?&style=flat-square&logo=youtube&logoColor=white&color=red">](https://www.youtube.com/channel/UCWnmp8t4GJzcjBxhtgo9rKQ)
