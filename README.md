@@ -10,9 +10,8 @@ Unity Youth Creator Cup 2022 のエントリー作品<br>
 PCカメラを使ってジェスチャーで魚群を動かすゲームです。
 詳しいゲーム説明や操作等はエントリーページをご覧ください。
 <br><p align="center">
-    [<img src="https://img.shields.io/badge/Unity Youth Creator Cup 2022-Osakana Flock-blue?style=for-the-badge&logo=unity
-    ">](https://uycc.unity3d.jp/entry/2022/1545)
-</p>
+    [<img src="https://img.shields.io/badge/Unity Youth Creator Cup 2022-Osakana Flock-blue?style=for-the-badge&logo=unity">](https://uycc.unity3d.jp/entry/2022/1545)
+</p><br>
  
 
 
@@ -32,7 +31,7 @@ NVIDIA GeForce GTX 1050
 ## License
 "Osakana Flock" is under [Apache License Version 2.0](https://www.apache.org/licenses/) .<br>
 ライセンス概要 ([引用](https://coliss.com/articles/build-websites/operation/work/choose-a-license-by-github.html)より一部抜粋)<br>
-> *Apache License 2.0
+> *Apache License 2.0<br>
   Required（必須）<br>
   著作権の表示、変更箇所の明示、ソースの明示<br>
   Permitted（許可）<br>
