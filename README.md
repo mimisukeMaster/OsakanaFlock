@@ -14,7 +14,7 @@
     </p>
 
 
-## Description 
+## Description
 Unity Youth Creator Cup 2022 のエントリー作品<br> 
 PCカメラを使ってジェスチャーで魚群を動かすゲームです。
 ~~詳しいゲーム説明や操作等はエントリーページをご覧ください。~~
@@ -24,7 +24,7 @@ PCカメラを使ってジェスチャーで魚群を動かすゲームです。
     [<img src="https://img.shields.io/badge/Unity Youth Creator Cup 2022-Osakana Flock-blue?style=for-the-badge&logo=unity">](https://uycc.unity3d.jp/entry/2022/154)
 </p><br>
 
-### ゲームの概要
+## Game feature
 <p>
     <b>作品名</b>: おさかなフロック
 </p>
@@ -54,6 +54,18 @@ PCカメラを使ってジェスチャーで魚群を動かすゲームです。
 <p>
     <b>推奨プレイ環境</b>: マウス, その他
 </p>
+
+## How to play
+#### ■マウス
+右ドラッグ：視点変更<br>
+左長押し：ジェスチャ待機モード<br>
+
+#### ■手のジェスチャ
+左から右へ振り払う：天敵を召喚<br>
+豆まきするように投げる動作：餌をあげる<br>
+
+#### ■おまけ機能<br>
+「おさかなビュー」ボタン：泳いでいる魚の目線で楽しめる<br>
 
 ## Environments
 - Unity version<br>
@@ -89,3 +101,40 @@ NVIDIA GeForce GTX 1050
 - [UnityでBoidsシミュレーションを作成してEntity Component System(ECS)を学んでみた](https://www.google.com/amp/s/tips.hecomi.com/entry/2018/12/23/200817%3famp=1)<br>
 - [Unity Technologies製推論エンジン Barracudaがスゴイという話](https://qiita.com/highno_RQ/items/478e1145f0eb868c0f2e)<br>
 - [Unity Barracuda やーる](https://qiita.com/SatoshiGachiFujimoto/items/739f5986f65c0d7465f0)
+
+# Credits
+From Asset Store<br>
+- [Fantasy Skybox FREE](https://assetstore.unity.com/packages/2d/textures-materials/sky/fantasy-skybox-free-18353)
+- [PowerUp particles](https://assetstore.unity.com/packages/vfx/particles/powerup-particles-16458)
+- [Sherbb's Particle Collection](https://assetstore.unity.com/packages/vfx/particles/sherbb-s-particle-collection-170798)
+- [Simple Button Set 01](https://assetstore.unity.com/packages/2d/gui/icons/simple-button-set-01-153979)
+- [DOTween (HOTween v2)](https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676)
+
+A tool used from (for hand pose recognition from camera images)<br>
+アセットストア以外のアセットデータ: カメラ画像からの手のポーズ認識
+- [HandPoseBarracuda – Keijiro Takahashi](https://github.com/keijiro/HandPoseBarracuda)
+
+Gesture recognition model generation<br>
+- [hand-gesture-recognition-using-mediapipe – Kazuhito00](https://github.com/mimisukeMaster/hand-gesture-recognition-using-mediapipe)
+
+Flocking-boid algorithm<br>
+- [FlockingBoidManipulator](https://github.com/mimisukeMaster/FlockingBoidManipulator)
+
+3D model of catfish<br>
+- [Blue cat fish test](https://sketchfab.com/3d-models/blue-cat-fish-test-9908dcd44f41477f8504d0590de726af)
+
+3D model of a carp<br>
+- [Koi Fish](https://sketchfab.com/3d-models/koi-fish-8ffded4f28514e439ea0a26d28c1852a)
+
+SE & BGM<br>
+- [Otologic](https://otologic.jp/)
+- [効果音ラボ](https://soundeffect-lab.info/)
+- [DOVA-SYNDROME](https://dova-s.jp/)
+
+Images<br>
+- [いらすと・ごー](https://illustgo.com/)
+- [いらすとや](https://www.irasutoya.com/)
+
+Font<br>
+- [コーポレート・ロゴ](https://logotype.jp/corporate-logo-font-dl.html)
+- [国鉄っぽいフォント](http://tabi-mo.travel.coocan.jp/font.htm)
