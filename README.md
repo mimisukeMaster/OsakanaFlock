@@ -17,12 +17,43 @@
 ## Description 
 Unity Youth Creator Cup 2022 のエントリー作品<br> 
 PCカメラを使ってジェスチャーで魚群を動かすゲームです。
-詳しいゲーム説明や操作等はエントリーページをご覧ください。
+~~詳しいゲーム説明や操作等はエントリーページをご覧ください。~~
 <br><p align="center">
-    [<img src="https://img.shields.io/badge/Unity Youth Creator Cup 2022-Osakana Flock-blue?style=for-the-badge&logo=unity">](https://uycc.unity3d.jp/entry/2022/1545)
+**大会ページごと削除されてしまっていることが確認されたため、リンクが正常に機能しておりません。**
+<br><br>
+    [<img src="https://img.shields.io/badge/Unity Youth Creator Cup 2022-Osakana Flock-blue?style=for-the-badge&logo=unity">](https://uycc.unity3d.jp/entry/2022/154)
 </p><br>
- 
 
+### ゲームの概要
+<p>
+    <b>作品名</b>: おさかなフロック
+</p>
+<p>
+    <b>作品紹介</b>: 仮想空間にたくさんの魚が群れで泳いでいます。
+    PCのカメラで手を認識させて、ジェスチャで魚たちを美しく泳がせよう。<br>
+    【PCカメラの使用を許可してください】<br>
+    美しさのポイントは、群れ行動、元気度合い、スピードです。美しさに応じてスコアが上昇します。<br>
+    ジェスチャで出せる指示は二つ：<br>
+    1. 天敵を召喚する　→　魚たちがびっくりして群れる。<br>
+    2. 餌をあげる　→　魚たちが元気をだす。<br>
+    魚たちにはHPがあるので餌を食べずにいると死にます。<br>
+    スコアを稼いでノルマ達成を目指そう。
+</p>
+<p>
+    <b>ゲームのクリア条件</b>: 一定時間に規定以上のスコアを稼ぐとゲームクリア。
+</p>
+<p>
+    <b>アピールポイント</b>: アイディア, 操作性
+</p>
+<p>
+    <b>最大プレイ人数</b>: 1人
+</p>
+<p>
+    <b>対応プラットフォーム</b>: PC（Windows）
+</p>
+<p>
+    <b>推奨プレイ環境</b>: マウス, その他
+</p>
 
 ## Environments
 - Unity version<br>
