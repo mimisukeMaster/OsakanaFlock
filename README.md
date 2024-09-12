@@ -24,6 +24,9 @@ PCカメラを使ってジェスチャーで魚群を動かすゲームです。
     [<img src="https://img.shields.io/badge/Unity Youth Creator Cup 2022-Osakana Flock-blue?style=for-the-badge&logo=unity">](https://uycc.unity3d.jp/entry/2022/154)
 </p><br>
 
+### Demo movie
+https://www.youtube.com/watch?v=xio_ZYVkx_Q&t=2s
+
 ## Game feature
 <p>
     <b>作品名</b>: おさかなフロック
