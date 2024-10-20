@@ -19,10 +19,11 @@ Unity Youth Creator Cup 2022 のエントリー作品<br>
 PCカメラを使ってジェスチャーで魚群を動かすゲームです。
 ~~詳しいゲーム説明や操作等はエントリーページをご覧ください。~~
 <br><p align="center">
-**大会ページごと削除されてしまっていることが確認されたため、リンクが正常に機能しておりません。**
+**大会ページごと削除されていることが確認されたため、リンクが正常に機能しておりません。**
 <br><br>
     [<img src="https://img.shields.io/badge/Unity Youth Creator Cup 2022-Osakana Flock-blue?style=for-the-badge&logo=unity">](https://uycc.unity3d.jp/entry/2022/154)
 </p><br>
+以下にその内容を転記しましたのでご確認ください。
 
 ### Demo movie
 https://www.youtube.com/watch?v=xio_ZYVkx_Q&t=2s
